@@ -53,3 +53,11 @@ gRPC vs Protocole Personnalisé vs CRUD:
 - **gRPC** : Efficace mais nécessite une API et une gestion des communications plus **complexe**.
 - **Protocole Personnalisé** : Offre une flexibilité totale mais augmente la **complexité de développement** et de maintenance.
 - **CRUD** : Commun pour les API web, exige une structure d'API bien définie, pouvant devenir **complexe** avec l'évolution des besoins.
+
+
+# controler
+## Load balancer
+### limitation du débit
+- [controlplane exemple](https://github.com/nsg-ethz/p4-learning/blob/0ddba187f207e24a8a614f5d1abf8bc11998c9d3/exercises/04-RSVP/thrift/solution/rsvp_controller.py#L276)
+- [exemple rate limiting](https://github.com/nsg-ethz/p4-learning/tree/master/exercises/04-RSVP/thrift#part-2-rate-limiting-and-priorities)
+- RFC [trTCM](https://datatracker.ietf.org/doc/html/rfc2698#section-1) tag du packet en fonction du débit 
