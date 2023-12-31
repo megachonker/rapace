@@ -16,7 +16,14 @@ net.addP4Switch('s5')
 net.addP4Switch('s6')
 net.addP4Switch('s7')
 
+net.addHost('h0')
 net.addHost('h1')
+net.addHost('h2')
+net.addHost('h3')
+net.addHost('h4')
+net.addHost('h5')
+net.addHost('h6')
+net.addHost('h7')
 
 
 net.addLink('s0','s1')
@@ -49,8 +56,14 @@ net.addLink('s5','s7')
 net.addLink('s6','s7')
 
 
-
-net.addLink('h1','s7')
+net.addLink('h0','s0')
+net.addLink('h1','s1')
+net.addLink('h2','s2')
+net.addLink('h3','s3')
+net.addLink('h4','s4')
+net.addLink('h5','s5')
+net.addLink('h6','s6')
+net.addLink('h7','s7')
 
 
 
