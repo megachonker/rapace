@@ -89,8 +89,8 @@
       "name" : "deparser",
       "id" : 0,
       "source_info" : {
-        "filename" : "/home/p4/rapace/repeater_without_table.p4",
-        "line" : 80,
+        "filename" : "/home/p4/rapace/P4src/repeater_with_table.p4",
+        "line" : 94,
         "column" : 8,
         "source_fragment" : "MyDeparser"
       },
@@ -103,19 +103,111 @@
   "register_arrays" : [],
   "calculations" : [],
   "learn_lists" : [],
-  "actions" : [],
+  "actions" : [
+    {
+      "name" : "MyIngress.forward",
+      "id" : 0,
+      "runtime_data" : [
+        {
+          "name" : "egress_port",
+          "bitwidth" : 9
+        }
+      ],
+      "primitives" : [
+        {
+          "op" : "assign",
+          "parameters" : [
+            {
+              "type" : "field",
+              "value" : ["standard_metadata", "egress_spec"]
+            },
+            {
+              "type" : "runtime_data",
+              "value" : 0
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/p4/rapace/P4src/repeater_with_table.p4",
+            "line" : 47,
+            "column" : 8,
+            "source_fragment" : "standard_metadata.egress_spec = egress_port"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "MyIngress.drop",
+      "id" : 1,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "mark_to_drop",
+          "parameters" : [
+            {
+              "type" : "header",
+              "value" : "standard_metadata"
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/p4/rapace/P4src/repeater_with_table.p4",
+            "line" : 51,
+            "column" : 8,
+            "source_fragment" : "mark_to_drop(standard_metadata)"
+          }
+        }
+      ]
+    }
+  ],
   "pipelines" : [
     {
       "name" : "ingress",
       "id" : 0,
       "source_info" : {
-        "filename" : "/home/p4/rapace/repeater_without_table.p4",
+        "filename" : "/home/p4/rapace/P4src/repeater_with_table.p4",
         "line" : 42,
         "column" : 8,
         "source_fragment" : "MyIngress"
       },
-      "init_table" : null,
-      "tables" : [],
+      "init_table" : "MyIngress.repeater",
+      "tables" : [
+        {
+          "name" : "MyIngress.repeater",
+          "id" : 0,
+          "source_info" : {
+            "filename" : "/home/p4/rapace/P4src/repeater_with_table.p4",
+            "line" : 55,
+            "column" : 10,
+            "source_fragment" : "repeater"
+          },
+          "key" : [
+            {
+              "match_type" : "exact",
+              "name" : "standard_metadata.ingress_port",
+              "target" : ["standard_metadata", "ingress_port"],
+              "mask" : null
+            }
+          ],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 2,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [0, 1],
+          "actions" : ["MyIngress.forward", "MyIngress.drop"],
+          "base_default_next" : null,
+          "next_tables" : {
+            "MyIngress.forward" : null,
+            "MyIngress.drop" : null
+          },
+          "default_entry" : {
+            "action_id" : 1,
+            "action_const" : false,
+            "action_data" : [],
+            "action_entry_const" : false
+          }
+        }
+      ],
       "action_profiles" : [],
       "conditionals" : []
     },
@@ -123,8 +215,8 @@
       "name" : "egress",
       "id" : 1,
       "source_info" : {
-        "filename" : "/home/p4/rapace/repeater_without_table.p4",
-        "line" : 62,
+        "filename" : "/home/p4/rapace/P4src/repeater_with_table.p4",
+        "line" : 76,
         "column" : 8,
         "source_fragment" : "MyEgress"
       },
@@ -175,7 +267,7 @@
       ["standard_metadata", "priority"]
     ]
   ],
-  "program" : "/home/p4/rapace/repeater_without_table.p4i",
+  "program" : "/home/p4/rapace/P4src/repeater_with_table.p4i",
   "__meta__" : {
     "version" : [2, 23],
     "compiler" : "https://github.com/p4lang/p4c"

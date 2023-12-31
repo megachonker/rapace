@@ -1,5 +1,4 @@
 log/
 pcap/
-topology.json 
 *.p4i
 client/target

@@ -13,7 +13,7 @@ api = SimpleSwitchThriftAPI(thrift_port)
 
 # Compile the P4 program
 print("Compiling")
-source = P4C("repeater_without_table.p4", "/usr/local/bin/p4c")
+source = P4C("P4src/repeater_with_table.p4", "/usr/local/bin/p4c")
 source.compile()
 
 # Load to the switch and swap the config 
