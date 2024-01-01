@@ -3,8 +3,20 @@ switchs:
     role: Repeater
     connect: [h1, s2]
   - nom: s2
-    role: Repeater
+    role: Firewall
     connect: [s3, s1]
+    rules:
+      - source_ip: "10.0.0.1"
+        dest_ip: "10.0.0.3"
+        protocol: "6"
+        source_port: "80"
+        dest_port: "8080"
+      # - source_ip: "10.0.0.3"
+      #   dest_ip: "10.0.0.1"
+      #   protocol: "6"
+      #   source_port: "80"
+      #   dest_port: "80"
+
   - nom: s3
     role: Repeater
     connect: [s2, h3]

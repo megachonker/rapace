@@ -4,5 +4,3 @@ pcap/
 client/target
 topology.json
 script/__pycache__/repeater.cpython-36.pyc
-script/__pycache__/repeater.cpython-36.pyc
-topology.json
