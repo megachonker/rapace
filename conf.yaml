@@ -1,0 +1,23 @@
+switchs:
+  - nom: s1
+    role: Repeater
+    connect: [h1, s2]
+  - nom: s2
+    role: Repeater
+    connect: [s3, s1]
+  - nom: s3
+    role: Repeater
+    connect: [s2, h3]
+# ping h4 <-> s5 <-> s7 <-> h6
+  - nom: s4
+    role: Repeater
+    connect: [h4, s5]
+  - nom: s5
+    role: Repeater
+    connect: [s4, s7]
+  - nom: s7
+    role: Repeater
+    connect: [s5, s6]
+  - nom: s6
+    role: Repeater
+    connect: [s7, h6]
