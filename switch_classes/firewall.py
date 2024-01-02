@@ -30,7 +30,7 @@ class Firewall(P4switch):
 
     
     def add_drop_rule(self,rule:Flow):
-        self.api.table_add("rule","drop",[str(rule.source_ip),str(rule.dest_ip)],[])
+        self.api.table_add("rule","drop",[str(rule.source_ip),str(rule.dest_ip),str(rule.protocol),str(rule.source_port),str(rule.dest_port)],[])
 
     def init_table(self):
         self.api.table_set_default("rule","allow",[])

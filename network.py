@@ -2,11 +2,17 @@ from p4utils.mininetlib.network_API import NetworkAPI
 
 net = NetworkAPI()
 
-def quit():
+def stop():
+    """ Stop the network """
+    print(net.net is None)
+    
     net.net.stop()
 
 
 def main(Cli=True):
+    """ Start the physical network, it is a clique of 8 switchs with one host per switchs
+        l2 strategy 
+        Cli=True to have a Cli (!!! does not return in this case) """
 
     # Network general options
     net.setLogLevel('info')
