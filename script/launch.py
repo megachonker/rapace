@@ -39,5 +39,5 @@ for switch in data['switchs']:
         print(f"Warning: Unknown role {role} for switch {name}")
         
         
-input("Blabla")
+input("Enter to quit")
 network.quit()
