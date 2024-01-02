@@ -6,6 +6,10 @@ sys.path.append('.')
 from switch_classes.repeater import Repeater
 from switch_classes.firewall import Firewall,Flow
 
+import network
+
+network.main(Cli=False)
+
 # Charger le fichier YAML (remplacer 'your_file.yaml' par le chemin de votre fichier)
 with open('conf.yaml', 'r') as file:
     data = yaml.safe_load(file)
@@ -33,3 +37,7 @@ for switch in data['switchs']:
         
     else:
         print(f"Warning: Unknown role {role} for switch {name}")
+        
+        
+input("Blabla")
+network.quit()
