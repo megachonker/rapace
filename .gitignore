@@ -1,6 +1,7 @@
-log/
-pcap/
-script/__pycache__/
+/log/
+/pcap/
+/script/__pycache__/
 client/target
 topology.json
 *.p4i
+*.json
