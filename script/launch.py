@@ -17,7 +17,7 @@ for switch in data['switchs']:
     
     if role == "Repeater":
         Repeater(name, *connections)
-    if role == "Firewall":
+    elif role == "Firewall":
         fire = Firewall(name, *connections)
         if 'rules' in switch:
             for rule in switch['rules']:
@@ -25,7 +25,8 @@ for switch in data['switchs']:
                 # use 6 for tcp
                 #Need call a append rule function it take only last rule
                 rule = Flow(rule['source_ip'], rule['dest_ip'], rule['protocol'], rule['source_port'], rule['dest_port'])
-                fire.add_rule(rule)
+                fire.add_drop_rule(rule)
+                
         else:
             print(f"Warning: No rule defined for Firewall {name}")
         

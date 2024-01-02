@@ -145,7 +145,7 @@ control MyIngress(inout headers hdr,
             drop;
         }
         size = 2;
-        default_action = drop;
+        default_action = allow;
     }
 
 
@@ -163,7 +163,7 @@ control MyIngress(inout headers hdr,
 
     apply {
         //check if allowed
-        if (rule.apply().hit){
+        if  (! rule.apply().hit){
             route.apply();
         }
     }

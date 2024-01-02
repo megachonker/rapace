@@ -1,6 +1,6 @@
 log/
 pcap/
-*.p4i
+script/__pycache__/
 client/target
 topology.json
-script/__pycache__/repeater.cpython-36.pyc
+*.p4i

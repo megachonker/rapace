@@ -30,12 +30,11 @@ class Firewall:
         self.api.load_new_config_file("P4src/firewall_with_table.json")
         self.api.swap_configs()
     
-    def add_rule(self,rule:Flow):
-        self.api.table_add("rule","allow",[str(rule.source_ip),str(rule.dest_ip)],[])
-                                        #    ,str(rule.protocol),str(rule.source_port),str(rule.dest_port)],[])
+    def add_drop_rule(self,rule:Flow):
+        self.api.table_add("rule","drop",[str(rule.source_ip),str(rule.dest_ip)],[])
 
     def init_table(self):
-        self.api.table_set_default("rule","drop",[])
+        self.api.table_set_default("rule","allow",[])
         self.api.table_set_default("route","drop",[])
         self.api.table_add("route","forward",[str(self.peer_port[0])],[str(self.peer_port[1])])
         self.api.table_add("route","forward",[str(self.peer_port[1])],[str(self.peer_port[0])])
