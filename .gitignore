@@ -5,3 +5,4 @@ client/target
 topology.json
 script/__pycache__/repeater.cpython-36.pycscript/__pycache__/firewall.cpython-36.pyc
 P4src/firewall_with_table.json
+script/__pycache__/firewall.cpython-36.pyc
