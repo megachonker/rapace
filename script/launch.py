@@ -28,8 +28,13 @@ for switch in data['switchs']:
     elif role == "Firewall":
         fire = Firewall(name, *connections)
         if 'rules' in switch:
-            for rule in switch['rules']:
-                rule = Flow(rule['source_ip'], rule['dest_ip'], rule['protocol'], rule['source_port'], rule['dest_port'])
+            #association table 
+            translate = {
+                'TCP':6,
+                'UDP':17,
+            }
+            for rule in switch['rules']: 
+                rule = Flow(rule['source_ip'], rule['dest_ip'],  translate.get(rule['protocol']), rule['source_port'], rule['dest_port'])
                 fire.add_drop_rule(rule)
                 
         else:
