@@ -27,6 +27,10 @@ control MyIngress(inout headers hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
 
+    // counter
+    direct_counter(CounterType.packets) filter_hit;
+    counter(1, CounterType.packets_and_bytes) total_packet;
+
     action forward(bit<9> egress_port){
         standard_metadata.egress_spec = egress_port;
     }
@@ -36,8 +40,8 @@ control MyIngress(inout headers hdr,
     }
 
     action allow(){
-        //do nothing it is corect way ?
-    }
+        //NoAction
+    }  
 
     table rule {  //table to check if the packet match a rule (if drop it)
         key = {
@@ -53,6 +57,7 @@ control MyIngress(inout headers hdr,
         }
         size = 2;
         default_action = allow;     //if any rule match allow the packet 
+        counters=filter_hit;
     }
 
 
@@ -66,9 +71,11 @@ control MyIngress(inout headers hdr,
         }
         size = 2;
         default_action = drop;
+        // counters=filter_hit;
     }
 
     apply {
+        total_packet.count((bit<32>)0);
         //check if allowed
         if  (! rule.apply().hit){
             route.apply();

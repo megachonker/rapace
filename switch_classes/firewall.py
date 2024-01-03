@@ -6,10 +6,6 @@ from collections import namedtuple
 from switch_classes.P4switch import P4switch
 
 
-
-
-
-
 Flow = namedtuple('Flow', ['source_ip', 'dest_ip', 'protocol', 'source_port', 'dest_port'])
 
 class Firewall(P4switch):
@@ -25,8 +21,6 @@ class Firewall(P4switch):
         
         
         self.mininet_update()
-        
-        
 
     
     def add_drop_rule(self,rule:Flow):
