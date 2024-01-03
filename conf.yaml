@@ -1,35 +1,50 @@
 switchs:
-  - nom: s1
+  - name: s1
+    role: LoadBalancer
+    connect: [h1, s2, s3]
+    in: h1  #the rest is out
+
+
+  - name: s2
     role: Repeater
-    connect: [h1, s2]
-  - nom: s2
-    role: Firewall
-    connect: [h2, s1]
-    rules:
-      - source_ip: "10.0.0.1"
-        dest_ip: "10.0.0.2"
-        protocol: "17" #UDP
-        source_port: "100"
-        dest_port: "100"
+    connect : [s1,s4]
+  
+  - name: s3
+    role: Repeater
+    connect: [s1,s4]
+
+  - name: s4
+    role: LoadBalancer
+    connect: [h4, s2, s3]
+    in: h4
+  # - name: s2
+  #   role: Firewall
+  #   connect: [h2, s1]
+  #   rules:
+  #     - source_ip: "10.0.0.1"
+  #       dest_ip: "10.0.0.2"
+  #       protocol: "17" #UDP
+  #       source_port: "100"
+  #       dest_port: "100"
       # - source_ip: "10.0.0.3"
       #   dest_ip: "10.0.0.1"
       #   protocol: "6"
       #   source_port: "80"
       #   dest_port: "80"
 
-  # - nom: s3
+  # - name: s3
   #   role: Repeater
   #   connect: [s2, h3]
 # # ping h4 <-> s5 <-> s7 <-> h6
-#   - nom: s4
+#   - name: s4
 #     role: Repeater
 #     connect: [h4, s5]
-#   - nom: s5
+#   - name: s5
 #     role: Repeater
 #     connect: [s4, s7]
-#   - nom: s7
+#   - name: s7
 #     role: Repeater
 #     connect: [s5, s6]
-#   - nom: s6
+#   - name: s6
 #     role: Repeater
 #     connect: [s7, h6]

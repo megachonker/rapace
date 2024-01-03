@@ -2,6 +2,22 @@ from p4utils.utils.helper import load_topo
 from p4utils.utils.sswitch_thrift_API import SimpleSwitchThriftAPI
 from p4utils.utils.compiler import * 
 from collections import namedtuple
+import p4utils
+
+class NodeInfo:
+    """ Contains inforamtion about a node ip mac port
+    it is relative about another node (especially for the port)"""
+    
+    def __init__(self,base_node : str ,node_name : str, topo : p4utils.utils.topology) :
+        """ base_node is the name of the node from the info are taken node_name is the name
+        of the node that's  info will be taken.
+        """
+        self.name = node_name
+        self.mac = topo.node_to_node_mac(node_name,base_node)
+        # self.ip = topo.node_to_node_interface_ip(node_name,base_node).split('/')[0]
+        self.port = topo.node_to_node_port_num(base_node,node_name)
+        
+        
 
 
 class P4switch:

@@ -18,9 +18,7 @@ header ethernet_t {
     bit<16>   etherType;
 }
 
-header loss_t {
-    // TODO 1: add fields
-}
+
 
 header ipv4_t {
     bit<4>    version;
@@ -66,24 +64,13 @@ header udp_t{
 }
 
 struct metadata {
-
-    bit<16> tmp_src_port;
-    bit<16> tmp_dst_port;
-
-
-
-    bit<16> previous_batch_id;
-    bit<16> batch_id;
-    bit<16> last_local_batch_id;
-
-    bit<1> dont_execute_um;
-    bit<1> dont_execute_dm;
+    bit<14> ecmp_hash;
+    bit<14> ecmp_group_id;
 }
 
 struct headers {
     ethernet_t   ethernet;
     ipv4_t       ipv4;
-    loss_t       loss;
     tcp_t        tcp;
     udp_t        udp;
 }

@@ -2,36 +2,45 @@
 from p4utils.utils.helper import load_topo
 from p4utils.utils.sswitch_thrift_API import SimpleSwitchThriftAPI
 from p4utils.utils.compiler import * 
-topo = load_topo("topology.json")
+from switch_classes.P4switch import P4switch,NodeInfo
 
 
 
-class LoadBalancer:
+class LoadBalancer(P4switch):
     
     
     
     def __init__(self, name :str, in_ : str, out : list ):
-        self.api = SimpleSwitchThriftAPI(topo.get_thrift_port(name))
-        self.name = name
-        self.in_ = in_
-        self.out= out
+        super().__init__(name)
         
-        self.compile_and_push()
+        self.in_info = NodeInfo(name,in_,self.topo)
+        
+        self.out_info = []
+        for o in out:
+            self.out_info.append(NodeInfo(name,o,self.topo))
+        
+        
+        
+        self.compile_and_push("P4src/loadbalancer.p4","P4src/loadbalancer.json")
+        
         self.init_table()
         
         
+        self.mininet_update()
         
-        self.api.switch_info.load_json_config(self.api.client)
-        self.api.table_entries_match_to_handle = self.api.create_match_to_handle_dict()
-        self.api.load_table_entries_match_to_handle()
-        
-    def compile_and_push(self):
-        source = P4C("P4src/loadbalancer.p4", "/usr/local/bin/p4c")
-        source.compile()
-        self.api.load_new_config_file("P4src/loadbalancer.json")
-        self.api.swap_configs()
-        
-        
-        
+    
     def init_table(self):
-        qsdqsd
+        self.api.table_set_default("ipv4_lpm","drop",[])
+        self.api.table_set_default("ecmp_group_to_nhop","drop",[])
+       
+        for out in self.out_info:
+            self.api.table_add("ipv4_lpm","set_nhop",[str(out.port)],[str(self.in_info.mac),str(self.in_info.port)])
+        
+        self.api.table_add("ipv4_lpm","ecmp_group",[str(self.in_info.port)],[str(1),str(len(self.out_info))])
+        
+        
+        for i in range(len(self.out_info)):
+            self.api.table_add("ecmp_group_to_nhop","set_nhop",[str(1),str(i)],[str(self.out_info[i].mac),str(self.out_info[i].port)])
+        
+        
+        
