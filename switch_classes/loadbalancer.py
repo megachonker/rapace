@@ -28,6 +28,10 @@ class LoadBalancer(P4switch):
         
         self.mininet_update()
         
+        
+        # Need to setup meter ....
+        #self.meter ....
+        
     
     def init_table(self):
         self.api.table_set_default("ipv4_lpm","drop",[])
@@ -36,11 +40,16 @@ class LoadBalancer(P4switch):
         for out in self.out_info:
             self.api.table_add("ipv4_lpm","set_nhop",[str(out.port)],[str(self.in_info.mac),str(self.in_info.port)])
         
-        self.api.table_add("ipv4_lpm","ecmp_group",[str(self.in_info.port)],[str(1),str(len(self.out_info))])
+        self.api.table_add("ipv4_lpm","ecmp_group",[str(self.in_info.port)],[str(len(self.out_info))])
         
         
         for i in range(len(self.out_info)):
-            self.api.table_add("ecmp_group_to_nhop","set_nhop",[str(1),str(i)],[str(self.out_info[i].mac),str(self.out_info[i].port)])
+            self.api.table_add("ecmp_group_to_nhop","set_nhop",[str(i)],[str(self.out_info[i].mac),str(self.out_info[i].port)])
+            
+            
+        self.api.table_add("filter", "drop", [str(2)], [])
+        self.api.table_add("filter", "advertise", [str(1)], [])
+        self.api.table_add("filter", "NoAction", [str(0)], [])
         
         
         

@@ -48,7 +48,7 @@ control MyIngress(inout headers hdr,
             hdr.ipv4.srcAddr: exact;
             hdr.ipv4.dstAddr: exact;
             hdr.ipv4.protocol: exact;
-            hdr.tcp.srcPort + hdr.udp.srcPort: exact @name("src port number");    //add both because one of the two are zero
+            hdr.tcp.srcPort + hdr.udp.srcPort: exact @name("src port number");    //add both because one of the two is zero
             hdr.tcp.dstPort + hdr.udp.dstPort: exact @name("dest port number");
         }
         actions = {

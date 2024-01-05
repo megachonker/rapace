@@ -23,11 +23,18 @@ control MyVerifyChecksum(inout headers hdr, inout metadata meta) {
 control MyIngress(inout headers hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
+
+
+    
+    
+    direct_meter<bit<32>>(MeterType.packets) the_meter;// to control traffic on each port
+    
+    
     action drop() {
         mark_to_drop(standard_metadata);
     }
 
-    action ecmp_group(bit<14> ecmp_group_id, bit<16> num_nhops){
+    action ecmp_group( bit<16> num_nhops){
         hash(meta.ecmp_hash,
 	    HashAlgorithm.crc16,
 	    (bit<1>)0,
@@ -38,34 +45,51 @@ control MyIngress(inout headers hdr,
           hdr.ipv4.protocol},
 	    num_nhops);
 
-	    meta.ecmp_group_id = ecmp_group_id;
     }
 
-    action set_nhop(macAddr_t dstAddr, egressSpec_t port) {
 
-        //set the src mac address as the previous dst, this is not correct right?
+
+    //We need to declare to set_nhop action beacause for in_out, the traffic must be control (1 p/S for e.g ) We consider that fotr the out_in it is not control
+    action set_nhop_in_out(macAddr_t dstAddr, egressSpec_t port) {
+
         hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
 
-       //set the destination mac address that we got from the match in the table
         hdr.ethernet.dstAddr = dstAddr;
 
-        //set the output port that we also get from the table
         standard_metadata.egress_spec = port;
 
-        //decrease ttl by 1
         hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
+
+        the_meter.read(meta.meter_tag);
+    }
+
+
+    action set_nhop_out_in(macAddr_t dstAddr, egressSpec_t port) {
+
+
+        hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
+
+        hdr.ethernet.dstAddr = dstAddr;
+
+        standard_metadata.egress_spec = port;
+
+        hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
+    }
+
+    action advertise(){
+        //for the future --> advertise the controler/user that trafic if half full 
     }
 
     table ecmp_group_to_nhop {
         key = {
-            meta.ecmp_group_id:    exact;
             meta.ecmp_hash: exact;
         }
         actions = {
             drop;
-            set_nhop;
+            set_nhop_in_out;
         }
         size = 1024;
+        meters = the_meter; //meter on each port 
     }
 
     table ipv4_lpm {
@@ -73,7 +97,7 @@ control MyIngress(inout headers hdr,
             standard_metadata.ingress_port: exact;
         }
         actions = {
-            set_nhop;
+            set_nhop_out_in;
             ecmp_group;
             drop;
         }
@@ -81,11 +105,29 @@ control MyIngress(inout headers hdr,
         default_action = drop;
     }
 
+    table filter {
+
+        key = {
+            meta.meter_tag : exact;
+        }
+
+
+        actions = {
+            NoAction;
+            drop;
+            advertise;
+        }
+
+        size = 1024;
+
+    }
+
     apply {
         if (hdr.ipv4.isValid()){
             switch (ipv4_lpm.apply().action_run){
                 ecmp_group: {
                     ecmp_group_to_nhop.apply();
+                    filter.apply();
                 }
             }
         }

@@ -63,9 +63,12 @@ header udp_t{
     bit<16> checksum;
 }
 
+// We choose to take on metadatahead for every P4 code, It is easier
 struct metadata {
+    //Use for loadbalancer 
     bit<14> ecmp_hash;
     bit<14> ecmp_group_id;
+    bit<32> meter_tag;
 }
 
 struct headers {
