@@ -26,15 +26,13 @@ class LoadBalancer(P4switch):
         self.init_table()
         self.init_conter_and_co()
         self.mininet_update()
-        
-        
-        
+
         
     
     def init_table(self):
         self.api.table_set_default("ipv4_lpm","drop",[])
         self.api.table_set_default("ecmp_group_to_nhop","drop",[])
-        self.api.table_set("filter", "drop", [])
+        self.api.table_set_default("filter", "drop", [])
         
        
         for out in self.out_info:
