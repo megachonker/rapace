@@ -26,22 +26,22 @@ for switch in data['switchs']:
     role = switch['role']
     connections = switch['connect']
 
-    #thrift port to interact with the switch
-    thrift_port = topo.get_thrift_port(name)
-    thrift = SimpleSwitchThriftAPI(thrift_port)
-
     if role == "Repeater":
-        switchs.append(Repeater(name,thrift, *connections))
+        switchs.append(Repeater(name, *connections))
     elif role == "Firewall":
-        fire = Firewall(name,thrift, *connections)
+        fire = Firewall(name, *connections)
         if 'rules' in switch:
             #association table 
             translate = {
                 'TCP':6,
                 'UDP':17,
+                'ICMP':1,
             }
             for rule in switch['rules']: 
-                rule = Flow(rule['source_ip'], rule['dest_ip'],  translate.get(rule['protocol']), rule['source_port'], rule['dest_port'])
+                if rule['protocol'] == 'ICMP':
+                    rule = Flow(rule['source_ip'], rule['dest_ip'],  translate.get(rule['protocol']), 0, 0)
+                else:
+                    rule = Flow(rule['source_ip'], rule['dest_ip'],  translate.get(rule['protocol']), rule['source_port'], rule['dest_port'])
                 fire.add_drop_rule(rule)
         else:
             print(f"Warning: No rule defined for Firewall {name}")
@@ -54,7 +54,7 @@ for switch in data['switchs']:
             raise Exception("in not present in connect list")
         out.remove(in_)
 
-        load = LoadBalancer(name,thrift,in_,out)
+        load = LoadBalancer(name,in_,out)
         switchs.append(load)
         print(f"Load Balancer lauch on {name}, his input is {in_} and output {out}")
     else:

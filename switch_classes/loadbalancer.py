@@ -10,9 +10,8 @@ class LoadBalancer(P4switch):
     
     
     
-    def __init__(self, name :str,thrif:SimpleSwitchThriftAPI, in_ : str, out : list ):
+    def __init__(self, name :str, in_ : str, out : list ):
         super().__init__(name)
-        self.thrif = thrif
         self.in_info = NodeInfo(name,in_,self.topo)
         
         
@@ -23,14 +22,9 @@ class LoadBalancer(P4switch):
             self.out_info.append(NodeInfo(name,o,self.topo))
         
         
-        
         self.compile_and_push("P4src/loadbalancer.p4","P4src/loadbalancer.json")
-        
         self.init_table()
-        
         self.init_conter_and_co()
-        
-        
         self.mininet_update()
         
         
@@ -55,6 +49,19 @@ class LoadBalancer(P4switch):
         self.api.table_add("filter", "advertise", [str(1)], [])
         self.api.table_add("filter", "NoAction", [str(0)], [])
         
+
+        
+        
+    # controler function
+    def stat(self):
+        print(f"stat du switch {self.name}")    
+        self.api.counter_read('total_packet', 0)
+
+    def reset(self):
+        print(f"reset du switch {self.name}")
+        self.api.table_clear("filter")
+
+    # dedicated
     def init_conter_and_co(self):
         self.api.meter_array_set_rates("the_meter",[(self.rates_max/2,1),(self.rates_max,1)])
         
@@ -63,13 +70,3 @@ class LoadBalancer(P4switch):
         self.api.meter_array_set_rates("the_meter",[(self.rates_max/2,1),(self.rates_max,1)])
         
         
-        
-        
-    # controler function
-    def stat(self):
-        print(f"stat du switch {self.name}")    
-        self.thrif.counter_read('total_packet', 0)
-
-    def reset(self):
-        print(f"reset du switch {self.name}")
-        self.init_table()

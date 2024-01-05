@@ -6,9 +6,8 @@ from switch_classes.P4switch import P4switch
 
 
 class Repeater(P4switch):
-    def __init__(self,name :str,thrif:SimpleSwitchThriftAPI,peer1 : str,peer2 : str ):
+    def __init__(self,name :str,peer1 : str,peer2 : str ):
         super().__init__(name)
-        self.thrif = thrif
         self.peer_port = [self.topo.node_to_node_port_num(name,peer1),
                           self.topo.node_to_node_port_num(name,peer2)]
         
@@ -26,9 +25,8 @@ class Repeater(P4switch):
         
     # controler function
     def stat(self):
-        print(f"stat du switch {self.name}")    
-        self.thrif.counter_read('total_packet', 0)
+        print(f"stat du switch {self.name} repeater")    
+        self.api.counter_read('total_packet', 0)
 
     def reset(self):
         print(f"reset du switch {self.name}")
-        self.init_table()

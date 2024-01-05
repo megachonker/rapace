@@ -9,9 +9,8 @@ from switch_classes.P4switch import P4switch
 Flow = namedtuple('Flow', ['source_ip', 'dest_ip', 'protocol', 'source_port', 'dest_port'])
 
 class Firewall(P4switch):
-    def __init__(self,name :str,thrif:SimpleSwitchThriftAPI,peer1 : str,peer2 : str):
+    def __init__(self,name :str,peer1 : str,peer2 : str):
         super().__init__(name)
-        self.thrif = thrif
         self.peer_port = [self.topo.node_to_node_port_num(name,peer1),
                           self.topo.node_to_node_port_num(name,peer2)]
 
@@ -29,13 +28,14 @@ class Firewall(P4switch):
 
     # controler function
     def stat(self):
-        print(f"stat du switch {self.name}")    
-        self.thrif.counter_read('total_packet', 0)
-        self.thrif.counter_read('filter_hit', 0)
+        print(f"stat du switch {self.name} Firewall")    
+        self.api.counter_read('total_packet', 0)
+        self.api.counter_read('filter_hit', 0)
 
     def reset(self):
         print(f"reset du switch {self.name}")
-        self.init_table()
+        self.api.table_clear("rule")
+
 
     # firewall function
     def add_drop_rule(self,rule:Flow):
