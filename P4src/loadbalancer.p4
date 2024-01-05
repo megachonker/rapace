@@ -28,7 +28,8 @@ control MyIngress(inout headers hdr,
     
     
     direct_meter<bit<32>>(MeterType.packets) the_meter;// to control traffic on each port
-    
+    counter(1, CounterType.packets_and_bytes) total_packet;
+
     
     action drop() {
         mark_to_drop(standard_metadata);
@@ -123,6 +124,7 @@ control MyIngress(inout headers hdr,
     }
 
     apply {
+        total_packet.count((bit<32>)0);
         if (hdr.ipv4.isValid()){
             switch (ipv4_lpm.apply().action_run){
                 ecmp_group: {

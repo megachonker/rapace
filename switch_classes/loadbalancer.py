@@ -10,9 +10,9 @@ class LoadBalancer(P4switch):
     
     
     
-    def __init__(self, name :str, in_ : str, out : list ):
+    def __init__(self, name :str,thrif:SimpleSwitchThriftAPI, in_ : str, out : list ):
         super().__init__(name)
-        
+        self.thrif = thrif
         self.in_info = NodeInfo(name,in_,self.topo)
         
         self.out_info = []
@@ -51,5 +51,11 @@ class LoadBalancer(P4switch):
         self.api.table_add("filter", "advertise", [str(1)], [])
         self.api.table_add("filter", "NoAction", [str(0)], [])
         
-        
-        
+    # controler function
+    def stat(self):
+        print(f"stat du switch {self.name}")    
+        self.thrif.counter_read('total_packet', 0)
+
+    def reset(self):
+        print(f"reset du switch {self.name}")
+        self.init_table()

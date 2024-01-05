@@ -42,6 +42,7 @@ control MyVerifyChecksum(inout headers hdr, inout metadata meta) {
 control MyIngress(inout headers hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
+    counter(1, CounterType.packets_and_bytes) total_packet;
 
     action forward(bit<9> egress_port){
         standard_metadata.egress_spec = egress_port;
@@ -65,6 +66,7 @@ control MyIngress(inout headers hdr,
     }
 
     apply {
+        total_packet.count((bit<32>)0);
         repeater.apply();
     }
 }
