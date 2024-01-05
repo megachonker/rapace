@@ -34,6 +34,8 @@ class LoadBalancer(P4switch):
     def init_table(self):
         self.api.table_set_default("ipv4_lpm","drop",[])
         self.api.table_set_default("ecmp_group_to_nhop","drop",[])
+        self.api.table_set("filter", "drop", [])
+        
        
         for out in self.out_info:
             self.api.table_add("ipv4_lpm","set_nhop_out_in",[str(out.port)],[str(self.in_info.mac),str(self.in_info.port)])
