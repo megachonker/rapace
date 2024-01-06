@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package myservice;
+
+service MyService {
+  rpc ListNode(Empty) returns (ListResponse);
+  rpc Reset(ResetRequest) returns (ResetResponse);
+  rpc GetStat(StatRequest) returns (StatResponse);
+  rpc AddFirewallRule(AddFirewallRuleRequest) returns (AddFirewallRuleResponse);
+}
+message Empty{
+
+}
+
+message ListResponse {
+  string object_id = 1;
+}
+
+message ResetRequest {
+  string object_id = 1;
+}
+
+message ResetResponse {
+  bool message = 1;
+}
+
+message StatRequest {
+  string object_id = 1;
+}
+
+message StatResponse {
+  string stat_info = 1;
+}
+
+message AddFirewallRuleRequest {
+  string firewall_id = 1;
+  string src_ip = 2;
+  string dst_ip = 3;
+  string proto = 4;
+}
+
+message AddFirewallRuleResponse {
+  bool message = 1;
+}
