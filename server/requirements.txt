@@ -1,3 +1,0 @@
-#tochange pls just exemple
-Flask==2.1.2
-requests==2.27.1
