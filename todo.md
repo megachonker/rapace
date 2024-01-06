@@ -54,3 +54,7 @@ déja fait en tp
 - propose segment routing
 - ajouter point de passage ``add_encap_node <flow> <node or link>``
 - compte nombre de packet reçus total
+
+
+
+lunch cursedgrpc.bash
