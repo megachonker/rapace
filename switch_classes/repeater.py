@@ -26,7 +26,7 @@ class Repeater(P4switch):
     # controler function
     def stat(self):
         print(f"stat du switch {self.name} repeater")    
-        self.api.counter_read('total_packet', 0)
+        return self.api.counter_read('total_packet', 0)
 
     def reset(self):
         print(f"reset du switch {self.name}")
