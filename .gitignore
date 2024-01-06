@@ -7,3 +7,6 @@ topology.json
 *.p4i
 *.json
 *.pcap
+venv/
+api_pb2_grpc.py
+api_pb2.py
