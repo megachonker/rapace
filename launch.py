@@ -6,13 +6,15 @@ from switch_classes.loadbalancer import LoadBalancer
 from switch_classes.firewall import Firewall,Flow
 from p4utils.utils.helper import load_topo
 
+from ExtendedTopology import extendtopology
+
 
 
 def init_switch():
     with open('conf.yaml', 'r') as file:
         data = yaml.safe_load(file)
     # Load la topo pour avoir les interface thrift
-    topo = load_topo('topology.json')
+    extendtopology("topology.json","ext_topology.json")
     
     switchs =  {}
     # Parcourir les éléments du fichier YAML pour créer des instances de Repeater
