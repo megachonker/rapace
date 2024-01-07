@@ -1,4 +1,4 @@
-from p4utils.utils.helper import load_topo
+from ExtendedTopology import load_etopo
 from p4utils.utils.sswitch_thrift_API import SimpleSwitchThriftAPI
 from p4utils.utils.compiler import * 
 from collections import namedtuple
@@ -23,7 +23,7 @@ class NodeInfo:
 class P4switch:
     def __init__(self,name : str, ) -> None:
         self.name = name
-        self.topo = load_topo("topology.json")
+        self.topo = load_etopo("ext_topology.json")
 
         self.api = SimpleSwitchThriftAPI(self.topo.get_thrift_port(name))
 

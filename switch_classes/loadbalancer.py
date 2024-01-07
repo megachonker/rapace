@@ -30,15 +30,22 @@ class LoadBalancer(P4switch):
         
     
     def init_table(self):
-        self.api.table_set_default("ipv4_lpm","drop",[])
+        
+        
+        self.api.table_clear("traffic_type")
+        self.api.table_clear("ecmp_group_to_nhop")
+        self.api.table_clear("filter")
+        
+        #Normally the default is not clear but ... :
+        self.api.table_set_default("traffic_type","drop",[])
         self.api.table_set_default("ecmp_group_to_nhop","drop",[])
         self.api.table_set_default("filter", "drop", [])
         
        
         for out in self.out_info:
-            self.api.table_add("ipv4_lpm","set_nhop_out_in",[str(out.port)],[str(self.in_info.mac),str(self.in_info.port)])
+            self.api.table_add("traffic_type","set_nhop_out_in",[str(out.port)],[str(self.in_info.mac),str(self.in_info.port)])
         
-        self.api.table_add("ipv4_lpm","ecmp_group",[str(self.in_info.port)],[str(len(self.out_info))])
+        self.api.table_add("traffic_type","ecmp_group",[str(self.in_info.port)],[str(len(self.out_info))])
         
         
         for i in range(len(self.out_info)):
@@ -59,8 +66,8 @@ class LoadBalancer(P4switch):
 
     def reset(self):
         print(f"reset du switch {self.name}")
-        self.api.table_clear("filter")
-
+        self.rates_max = 1* SEC_METER
+        self.init_table()
     # dedicated
     def init_conter_and_co(self):
         self.api.meter_array_set_rates("the_meter",[(self.rates_max/2,1),(self.rates_max,1)])

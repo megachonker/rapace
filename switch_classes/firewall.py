@@ -21,6 +21,11 @@ class Firewall(P4switch):
     
 
     def init_table(self):
+        
+        self.api.table_clear("rule")
+        self.api.table_clear("route")
+
+        
         self.api.table_set_default("rule","allow",[])
         self.api.table_set_default("route","drop",[])
         self.api.table_add("route","forward",[str(self.peer_port[0])],[str(self.peer_port[1])])
@@ -33,7 +38,7 @@ class Firewall(P4switch):
 
     def reset(self):
         print(f"reset du switch {self.name}")
-        self.api.table_clear("rule")
+        self.init_table()
 
 
     # firewall function

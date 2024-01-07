@@ -90,7 +90,7 @@
       "id" : 0,
       "source_info" : {
         "filename" : "/home/p4/rapace/P4src/repeater_with_table.p4",
-        "line" : 94,
+        "line" : 96,
         "column" : 8,
         "source_fragment" : "MyDeparser"
       },
@@ -99,7 +99,20 @@
     }
   ],
   "meter_arrays" : [],
-  "counter_arrays" : [],
+  "counter_arrays" : [
+    {
+      "name" : "MyIngress.total_packet",
+      "id" : 0,
+      "source_info" : {
+        "filename" : "/home/p4/rapace/P4src/repeater_with_table.p4",
+        "line" : 45,
+        "column" : 46,
+        "source_fragment" : "total_packet"
+      },
+      "size" : 1,
+      "is_direct" : false
+    }
+  ],
   "register_arrays" : [],
   "calculations" : [],
   "learn_lists" : [],
@@ -128,7 +141,7 @@
           ],
           "source_info" : {
             "filename" : "/home/p4/rapace/P4src/repeater_with_table.p4",
-            "line" : 47,
+            "line" : 48,
             "column" : 8,
             "source_fragment" : "standard_metadata.egress_spec = egress_port"
           }
@@ -150,9 +163,35 @@
           ],
           "source_info" : {
             "filename" : "/home/p4/rapace/P4src/repeater_with_table.p4",
-            "line" : 51,
+            "line" : 52,
             "column" : 8,
             "source_fragment" : "mark_to_drop(standard_metadata)"
+          }
+        }
+      ]
+    },
+    {
+      "name" : "repeater_with_table69",
+      "id" : 2,
+      "runtime_data" : [],
+      "primitives" : [
+        {
+          "op" : "count",
+          "parameters" : [
+            {
+              "type" : "counter_array",
+              "value" : "MyIngress.total_packet"
+            },
+            {
+              "type" : "hexstr",
+              "value" : "0x00000000"
+            }
+          ],
+          "source_info" : {
+            "filename" : "/home/p4/rapace/P4src/repeater_with_table.p4",
+            "line" : 69,
+            "column" : 8,
+            "source_fragment" : "total_packet.count((bit<32>)0)"
           }
         }
       ]
@@ -168,14 +207,43 @@
         "column" : 8,
         "source_fragment" : "MyIngress"
       },
-      "init_table" : "MyIngress.repeater",
+      "init_table" : "tbl_repeater_with_table69",
       "tables" : [
         {
-          "name" : "MyIngress.repeater",
+          "name" : "tbl_repeater_with_table69",
           "id" : 0,
           "source_info" : {
             "filename" : "/home/p4/rapace/P4src/repeater_with_table.p4",
-            "line" : 55,
+            "line" : 69,
+            "column" : 8,
+            "source_fragment" : "total_packet.count((bit<32>)0)"
+          },
+          "key" : [],
+          "match_type" : "exact",
+          "type" : "simple",
+          "max_size" : 1024,
+          "with_counters" : false,
+          "support_timeout" : false,
+          "direct_meters" : null,
+          "action_ids" : [2],
+          "actions" : ["repeater_with_table69"],
+          "base_default_next" : "MyIngress.repeater",
+          "next_tables" : {
+            "repeater_with_table69" : "MyIngress.repeater"
+          },
+          "default_entry" : {
+            "action_id" : 2,
+            "action_const" : true,
+            "action_data" : [],
+            "action_entry_const" : true
+          }
+        },
+        {
+          "name" : "MyIngress.repeater",
+          "id" : 1,
+          "source_info" : {
+            "filename" : "/home/p4/rapace/P4src/repeater_with_table.p4",
+            "line" : 56,
             "column" : 10,
             "source_fragment" : "repeater"
           },
@@ -216,7 +284,7 @@
       "id" : 1,
       "source_info" : {
         "filename" : "/home/p4/rapace/P4src/repeater_with_table.p4",
-        "line" : 76,
+        "line" : 78,
         "column" : 8,
         "source_fragment" : "MyEgress"
       },

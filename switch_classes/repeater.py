@@ -18,6 +18,7 @@ class Repeater(P4switch):
         
         
     def init_table(self):
+        self.api.table_clear("repeater")
         self.api.table_set_default("repeater","drop",[])
         
         self.api.table_add("repeater","forward",[str(self.peer_port[0])],[str(self.peer_port[1])])
@@ -30,3 +31,4 @@ class Repeater(P4switch):
 
     def reset(self):
         print(f"reset du switch {self.name}")
+        self.init_table()

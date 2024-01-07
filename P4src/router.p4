@@ -27,7 +27,6 @@ control MyIngress(inout headers hdr,
 
     
     
-    direct_meter<bit<32>>(MeterType.packets) the_meter;// to control traffic on each port
     counter(1, CounterType.packets_and_bytes) total_packet;
 
     
@@ -35,37 +34,13 @@ control MyIngress(inout headers hdr,
         mark_to_drop(standard_metadata);
     }
 
-    action ecmp_group( bit<16> num_nhops){
-        hash(meta.ecmp_hash,
-	    HashAlgorithm.crc16,
-	    (bit<1>)0,
-	    { hdr.ipv4.srcAddr,
-	      hdr.ipv4.dstAddr,
-          hdr.tcp.srcPort + hdr.udp.srcPort,
-          hdr.tcp.dstPort + hdr.udp.dstPort,
-          hdr.ipv4.protocol},
-	    num_nhops);
-
-    }
+   
 
 
 
-    //We need to declare to set_nhop action beacause for in_out, the traffic must be control (1 p/S for e.g ) We consider that fotr the out_in it is not control
-    action set_nhop_in_out(macAddr_t dstAddr, egressSpec_t port) {
+    
 
-        hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
-
-        hdr.ethernet.dstAddr = dstAddr;
-
-        standard_metadata.egress_spec = port;
-
-        hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
-
-        the_meter.read(meta.meter_tag);
-    }
-
-
-    action set_nhop_out_in(macAddr_t dstAddr, egressSpec_t port) {
+    action forward(macAddr_t dstAddr, egressSpec_t port) {
 
 
         hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
@@ -77,63 +52,24 @@ control MyIngress(inout headers hdr,
         hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
     }
 
-    action advertise(){
-        //for the future --> advertise the controler/user that trafic if half full 
-    }
+  
 
-    table ecmp_group_to_nhop {
+    table ipv4_lpm {
         key = {
-            meta.ecmp_hash: exact;
+            hdr.ipv4.dstAddr : exact;
         }
         actions = {
-            drop;
-            set_nhop_in_out;
-        }
-        size = 1024;
-        meters = the_meter; //meter on each port 
-    }
-
-    table traffic_type {
-        //This table check where the packet from (if it is from in port -> load balance, out ports -> just forward to in port)
-        key = {
-            standard_metadata.ingress_port: exact;
-        }
-        actions = {
-            set_nhop_out_in;
-            ecmp_group;
+            forward;
             drop;
         }
         size = 1024;
         default_action = drop;
     }
 
-    table filter {
-
-        key = {
-            meta.meter_tag : exact;
-        }
-
-
-        actions = {
-            NoAction;
-            drop;
-            advertise;
-        }
-
-        size = 1024;
-
-    }
 
     apply {
         total_packet.count((bit<32>)0);
-        if (hdr.ipv4.isValid()){
-            switch (traffic_type.apply().action_run){
-                ecmp_group: {
-                    ecmp_group_to_nhop.apply();
-                    filter.apply();
-                }
-            }
-        }
+        ipv4_lpm.apply();
     }
 }
 

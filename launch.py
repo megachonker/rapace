@@ -1,6 +1,7 @@
 import yaml
 
 from switch_classes.repeater import Repeater
+from switch_classes.router import Router
 from switch_classes.loadbalancer import LoadBalancer
 from switch_classes.firewall import Firewall,Flow
 from p4utils.utils.helper import load_topo
@@ -51,6 +52,10 @@ def init_switch():
             load = LoadBalancer(name,in_,out)
             switchs[name]=load
             print(f"Load Balancer lauch on {name}, his input is {in_} and output {out}")
+        
+        elif role == 'Router':
+            switch[name] = Router(name, switch['connect'])
+            
         else:
             print(f"Warning: Unknown role {role} for switch {name}")
     return switchs
