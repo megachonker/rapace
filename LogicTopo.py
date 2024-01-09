@@ -23,8 +23,23 @@ class LogicTopo(NetworkGraph):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.physic_edges =[]
-    
-    
+        
+        #append loopback
+        nodes =[]
+        for n in self.nodes:
+            dico=self.nodes[n]
+            if dico.get("isSwitch") is not None:
+                dico["loopback"] ="127.0.0."+n.split("s")[1]
+            nodes.append((n,dico))
+
+        self.add_nodes_from(nodes)   
+        
+    def undo_physic_links(self,topo : NetworkGraph):
+        self.clear_edges()
+        for e in topo.edges:
+            self.physic_edges.append((e,topo.edges[e]))
+        
+        
     def get_switch_loopback(self,name):
         if self.isSwitch(name):
             ip = self.get_nodes()[name].get('loopback')
@@ -35,19 +50,6 @@ class LogicTopo(NetworkGraph):
         else:
             raise TypeError('{} is not a switch.'.format(name))
         
-    def from_physic(self,topo : NetworkGraph):
-        """ Return a Logic graph with the node of the pysic graph and with loopback for switchs """
-        nodes =[]
-    
-        for n in topo.nodes:
-            dico=topo.nodes[n]
-            if dico.get("isSwitch") is not None:
-                dico["loopback"] ="127.0.0."+n.split("s")[1]
-            nodes.append((n,dico))
-
-        self.add_nodes_from(nodes)    
-        for e in topo.edges:
-            self.physic_edges.append((e,topo.edges[e]))
         
     def switch_info(self,name:str, role : str, connections : list):
         """ Update the swotch info : put a role label and put the edges of the logic network """

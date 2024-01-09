@@ -17,9 +17,10 @@ def init_switch():
 
 
     topo  = load_topo("topology.json")
-    logic_topo = LogicTopo()
+    logic_topo = LogicTopo(topo)
     
-    logic_topo.from_physic(topo)
+    logic_topo.undo_physic_links(topo)
+    
     
     
     
@@ -36,9 +37,9 @@ def init_switch():
         logic_topo.switch_info(name,role,connections)
 
         if role == "Repeater":
-            switchs[name]=Repeater(name, *connections)
+            switchs[name]=Repeater(name, *connections,logic_topo)
         elif role == "Firewall":
-            fire = Firewall(name, *connections)
+            fire = Firewall(name, *connections,logic_topo)
             if 'rules' in switch:
                 #association table 
                 translate = {
@@ -63,12 +64,12 @@ def init_switch():
                 raise Exception("in not present in connect list")
             out.remove(in_)
 
-            load = LoadBalancer(name,in_,out)
+            load = LoadBalancer(name,in_,out,logic_topo)
             switchs[name]=load
             print(f"Load Balancer lauch on {name}, his input is {in_} and output {out}")
         
         elif role == 'Router':
-            switch[name] = Router(name, switch['connect'])
+            switch[name] = Router(name, connections,logic_topo)
             
         else:
             print(f"Warning: Unknown role {role} for switch {name}")

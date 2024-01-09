@@ -1,7 +1,8 @@
 
 from p4utils.utils.helper import load_topo
 from p4utils.utils.sswitch_thrift_API import SimpleSwitchThriftAPI
-from p4utils.utils.compiler import * 
+from p4utils.utils.compiler import *
+from LogicTopo import LogicTopo 
 from switch_classes.P4switch import P4switch,NodeInfo
 
 
@@ -9,8 +10,8 @@ class Router(P4switch):
     
     
     
-    def __init__(self, name :str, connexion : list ):
-        super().__init__(name)
+    def __init__(self, name :str, connexion : list,topo : LogicTopo ):
+        super().__init__(name,topo)
         
         
         self.port_info = []
@@ -32,24 +33,29 @@ class Router(P4switch):
                 #For the moment ignore -> decaplusalte in the future
                 pass
             else:
-                paths = self.topo.get_shortest_paths_between_nodes(self.name, sw_dst)
-                print(paths)
+                try:
+                    paths = self.topo.get_shortest_paths_between_nodes(self.name, sw_dst)
+                except:
+                    continue #the two switch are no connected
                 ip = self.topo.get_switch_loopback(sw_dst)
                 if len(paths) >=1:
                     next_hop = paths[0][1]
                     port = self.topo.node_to_node_port_num(self.name,next_hop)
                     mac = self.topo.node_to_node_mac(next_hop,self.name)
+                    print("add entry :", "ipv4_lpm","forward",[str(ip)],[mac,str(port)])
                     self.api.table_add("ipv4_lpm","forward",[str(ip)],[mac,str(port)])
                     
             #host linked to this switchs
             for host in self.topo.get_hosts_connected_to(sw_dst):
                 ip = self.topo.get_host_ip(host)
                 if next_hop:
+                    print("add entry :","ipv4_lpm","forward",[str(ip)],[mac,str(port)])
                     self.api.table_add("ipv4_lpm","forward",[str(ip)],[mac,str(port)]) #mac and port already setup 
 
                 elif sw_dst == self.name: #host directly connect to this switch
                     port = self.topo.node_to_node_port_num(self.name,host)
                     mac = self.topo.node_to_node_mac(host,self.name)
+                    print("add entry :","ipv4_lpm","forward",[str(ip)],[mac,str(port)] )
                     self.api.table_add("ipv4_lpm","forward",[str(ip)],[mac,str(port)])
                     
                 
