@@ -1,10 +1,9 @@
 switchs:
   - name: s1
-    role: Router
+    role: LoadBalancer
     connect: [h1, s2, s3]
     in: h1  #the rest is out
-
-
+    
   - name: s2
     role: Router
     connect : [s1,s3,s4]
@@ -14,29 +13,29 @@ switchs:
     connect: [s1,s2,s4]
 
   - name: s4
-    role: Router
+    role: LoadBalancer
     connect: [h4, s2, s3]
     in: h4
 
 
-  # - name: s5
-  #   role: Firewall
-  #   connect: [h5, s6]
-  #   rules:
-  #     - source_ip: "10.0.0.5"
-  #       dest_ip: "10.0.0.6"
-  #       protocol: "TCP"
-  #       source_port: "8080"
-  #       dest_port: "8080"
-  #     - source_ip: "10.0.0.6"
-  #       dest_ip: "10.0.0.5"
-  #       protocol: "TCP"
-  #       source_port: "8080"
-  #       dest_port: "8080"
+  - name: s5
+    role: Firewall
+    connect: [h5, s6]
+    rules:
+      - source_ip: "10.0.0.5"
+        dest_ip: "10.0.0.6"
+        protocol: "TCP"
+        source_port: "8080"
+        dest_port: "8080"
+      - source_ip: "10.0.0.6"
+        dest_ip: "10.0.0.5"
+        protocol: "TCP"
+        source_port: "8080"
+        dest_port: "8080"
 
-  # - name: s6
-  #   role: Repeater
-  #   connect : [s5,h6]
+  - name: s6
+    role: Repeater
+    connect : [s5,h6]
   
 
   # - name: s3

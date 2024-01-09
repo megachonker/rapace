@@ -2,6 +2,7 @@ import grpc
 from concurrent import futures
 import api_pb2
 import api_pb2_grpc
+from switch_classes.firewall import Flow
 
 import launch
 
@@ -28,21 +29,54 @@ def grpc_error_handler(f):
     return wrapper
 
 class MyService(api_pb2_grpc.MyServiceServicer):
-
     @grpc_error_handler
     def Reset(self, request, context):
-        switchs[request.object_id].reset()
+        switchs[request.node].reset()
         return api_pb2.ResetResponse(message=True)
 
     @grpc_error_handler
     def GetStat(self, request, context):
-        return api_pb2.StatResponse(stat_info=str(switchs[request.object_id].stat()))
+        return api_pb2.StatResponse(stat_info=str(switchs[request.node].stat()))
 
     @grpc_error_handler
     def AddFirewallRule(self, request, context):
-        # Implement logic to add a rule to the firewall
+        # print(f"fw debug {request}")
+        #association table 
+        translate = {
+            'TCP':6,
+            'UDP':17,
+            'ICMP':1,
+        }
+        rule = Flow(request.source_ip, request.dest_ip,  translate.get(request.protocol), request.source_port, request.dest_port)
+        print(f"try append firewall rule at {rule}")
+        switchs[request.node].add_drop_rule(rule)
         return api_pb2.AddFirewallRuleResponse(message=True)
+    
+    @grpc_error_handler
+    def Change_rate(self, request, context):
+        return api_pb2.ChangeRateResponse(result=str(switchs[request.node].set_rates_lb(request.rate)))
+   
+    @grpc_error_handler
+    def set_encap(self, request, context):
+        print("non implémenter")
+        return api_pb2.SetEncapResponce(stat_info=str(switchs[request.node].add_encap(request.ip_address,request.nodedst)))
+    
+    @grpc_error_handler
+    def show_topo(self, request, context):
+        return api_pb2.Json("non implémenter doit envoyer la topo en json degeux")
 
+    @grpc_error_handler
+    def add_link(self, request, context):
+        return api_pb2.ChangeLinkResponce(f"add_link unimplementer {request.nodeA} et {request.nodeB}")
+    
+    @grpc_error_handler
+    def remove_Link(self, request, context):
+        return api_pb2.ChangeLinkResponce(f"rm_link unimplementer {request.nodeA} et {request.nodeB}")
+    
+    @grpc_error_handler
+    def change_weight(self, request, context):
+        return api_pb2.ChangeLinkResponce(f"changer poid unimplementer {request.lien} et {request.weight}")
+    
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

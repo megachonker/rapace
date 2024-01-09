@@ -61,10 +61,15 @@ class Router(P4switch):
         self.api.table_clear("ipv4_lpm")
         self.api.table_set_default("ipv4_lpm","drop",[])
         self.routes()
-        
+    
+    def add_encap(self,ip,dst):
+        ip_dst_loopback = self.topo.get_switch_loopback(dst)
+        #azerazer
+        print(f"déviation de {ip} qui doit passer par {ip_dst_loopback}")
+
     # controler function
     def stat(self):
-        print(f"stat du switch {self.name}")    
+        print(f"stat du switch {self.name} router")    
         return self.api.counter_read('total_packet', 0)
 
     def reset(self):

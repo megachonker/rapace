@@ -69,12 +69,15 @@ class LoadBalancer(P4switch):
         print(f"reset du switch {self.name}")
         self.rates_max = 1* SEC_METER
         self.init_table()
+        self.init_conter_and_co()
     # dedicated
     def init_conter_and_co(self):
         self.api.meter_array_set_rates("the_meter",[(self.rates_max/2,1),(self.rates_max,1)])
         
     def set_rates_lb(self,pktps):
         self.rates_max = pktps * SEC_METER
+        print(f"new rate set to {self.rates_max}")
         self.api.meter_array_set_rates("the_meter",[(self.rates_max/2,1),(self.rates_max,1)])
+        return f"new rate set to {self.rates_max}"
         
         

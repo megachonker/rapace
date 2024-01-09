@@ -72,13 +72,14 @@ def init_switch():
             print(f"Load Balancer lauch on {name}, his input is {in_} and output {out}")
         
         elif role == 'Router':
-            switch[name] = Router(name, connections,logic_topo)
+            switchs[name] = Router(name, connections,logic_topo)
             
         else:
             print(f"Warning: Unknown role {role} for switch {name}")
             
     logic_topo.save_topo("logic_topology.json")
     return switchs
+
 
 init_switch()
 
