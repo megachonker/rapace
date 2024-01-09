@@ -37,6 +37,7 @@ class Router(P4switch):
                     paths = self.topo.get_shortest_paths_between_nodes(self.name, sw_dst)
                 except:
                     continue #the two switch are no connected
+
                 ip = self.topo.get_switch_loopback(sw_dst)
                 if len(paths) >=1:
                     next_hop = paths[0][1]

@@ -27,15 +27,18 @@ def init_switch():
     switchs =  {}
     # Parcourir les éléments du fichier YAML pour créer des instances de Repeater
     for switch in data['switchs']:
-        
-        
+        """ Iter a first time because P4switchs need a complete topology to start (especially router) """
+        name = switch['name']
+        role = switch['role']
+        connections = switch['connect']   
+        logic_topo.switch_info(name,role,connections)
+
+
+    for switch in data['switchs']:
         name = switch['name']
         role = switch['role']
         connections = switch['connect']
         
-        
-        logic_topo.switch_info(name,role,connections)
-
         if role == "Repeater":
             switchs[name]=Repeater(name, *connections,logic_topo)
         elif role == "Firewall":
