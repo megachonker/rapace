@@ -4,27 +4,66 @@ package myservice;
 
 service MyService {
   rpc ListNode(Empty) returns (ListResponse);
-  rpc Reset(ResetRequest) returns (ResetResponse);
-  rpc GetStat(StatRequest) returns (StatResponse);
+  rpc Reset(Node) returns (ResetResponse);
+  rpc GetStat(Node) returns (StatResponse);
   rpc AddFirewallRule(AddFirewallRuleRequest) returns (AddFirewallRuleResponse);
+  rpc Change_rate(RateRequest) returns (ChangeRateResponse);
+  rpc set_encap(SetEncapRequest) returns (SetEncapResponce);
+  rpc show_topo(Empty) returns (Json); // a remplacer par de node truc clean
+  rpc add_link(Link) returns (ChangeLinkResponce);
+  rpc remove_Link(Link) returns(ChangeLinkResponce);
+  rpc change_weight(ChangeWeightRequest) returns (ChangeLinkResponce);
 }
+
+message ChangeLinkResponce{
+  string status =1;
+}
+
+message ChangeWeightRequest{
+  Link lien =1 ;
+  string weight =2;
+}
+
+message Json{
+  string mon_json =1; //pas bien
+}
+
+message SetEncapResponce{
+  string answer =1;
+}
+message SetEncapRequest{
+  string node =1;
+  string ip_address = 2;
+  string nodedst=3;
+}
+
+message Link{
+  string nodeA =1;
+  string nodeB =2;
+}
+
+message ChangeRateResponse{
+  string result = 1;
+}
+
+message RateRequest{
+  string node = 1;  
+  float rate = 2;
+}
+
 message Empty{
 }
 
-message ListResponse {
-  string object_id = 1;
+message Node{
+  string node = 1;
 }
 
-message ResetRequest {
-  string object_id = 1;
+message ListResponse {
+  repeated Node nodes = 1;
 }
 
 message ResetResponse {
   bool message = 1;
-}
-
-message StatRequest {
-  string object_id = 1;
 }
 
 message StatResponse {
@@ -32,10 +71,12 @@ message StatResponse {
 }
 
 message AddFirewallRuleRequest {
-  string firewall_id = 1;
-  string src_ip = 2;
-  string dst_ip = 3;
-  string proto = 4;
+  string node = 1;
+  string source_ip = 2;
+  string dest_ip = 3;
+  string protocol = 4;
+  int64 source_port = 5;
+  int64 dest_port = 6;
 }
 
 message AddFirewallRuleResponse {
