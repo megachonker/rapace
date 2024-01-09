@@ -6,25 +6,18 @@ from switch_classes.P4switch import P4switch,NodeInfo
 
 
 class Router(P4switch):
-    
-    
-    
     def __init__(self, name :str, connexion : list ):
         super().__init__(name)
-        
         
         self.port_info = []
         for connex in connexion:
             self.port_info.append(NodeInfo(name,connex,self.topo))
-        
-        
-        
+
         self.compile_and_push("P4src/router.p4","P4src/router.json")
         self.init_table()
         self.mininet_update()
         
     def routes(self):
-        
         #Route for switchs loopback (and host inside)
         for sw_dst in self.topo.get_p4switches():
             next_hop = None
@@ -51,25 +44,12 @@ class Router(P4switch):
                     port = self.topo.node_to_node_port_num(self.name,host)
                     mac = self.topo.node_to_node_mac(host,self.name)
                     self.api.table_add("ipv4_lpm","forward",[str(ip)],[mac,str(port)])
-                    
-                
-                
-                
-            
-            
 
-        
-    
+
     def init_table(self):
         self.api.table_clear("ipv4_lpm")
         self.api.table_set_default("ipv4_lpm","drop",[])
-        
         self.routes()
-        
-        
-        
-
-        
         
     # controler function
     def stat(self):
@@ -79,4 +59,3 @@ class Router(P4switch):
     def reset(self):
         print(f"reset du switch {self.name}")
         self.init_table()
-        

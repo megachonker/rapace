@@ -7,13 +7,12 @@
 #include "include/parsers.p4"
 
 
-
 /*************************************************************************
 ************   C H E C K S U M    V E R I F I C A T I O N   *************
 *************************************************************************/
 
 control MyVerifyChecksum(inout headers hdr, inout metadata meta) {
-    apply {  }
+    apply {}
 }
 
 /*************************************************************************
@@ -23,26 +22,13 @@ control MyVerifyChecksum(inout headers hdr, inout metadata meta) {
 control MyIngress(inout headers hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
-
-
-    
-    
     counter(1, CounterType.packets_and_bytes) total_packet;
 
-    
     action drop() {
         mark_to_drop(standard_metadata);
     }
 
-   
-
-
-
-    
-
     action forward(macAddr_t dstAddr, egressSpec_t port) {
-
-
         hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
 
         hdr.ethernet.dstAddr = dstAddr;
@@ -52,7 +38,6 @@ control MyIngress(inout headers hdr,
         hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
     }
 
-  
 
     table ipv4_lpm {
         key = {
@@ -80,9 +65,7 @@ control MyIngress(inout headers hdr,
 control MyEgress(inout headers hdr,
                  inout metadata meta,
                  inout standard_metadata_t standard_metadata) {
-    apply {
-
-    }
+    apply {}
 }
 
 /*************************************************************************

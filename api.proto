@@ -9,7 +9,6 @@ service MyService {
   rpc AddFirewallRule(AddFirewallRuleRequest) returns (AddFirewallRuleResponse);
 }
 message Empty{
-
 }
 
 message ListResponse {
