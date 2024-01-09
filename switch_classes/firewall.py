@@ -2,6 +2,7 @@ from p4utils.utils.helper import load_topo
 from p4utils.utils.sswitch_thrift_API import SimpleSwitchThriftAPI
 from p4utils.utils.compiler import * 
 from collections import namedtuple
+from LogicTopo import LogicTopo
 
 from switch_classes.P4switch import P4switch
 
@@ -9,8 +10,8 @@ from switch_classes.P4switch import P4switch
 Flow = namedtuple('Flow', ['source_ip', 'dest_ip', 'protocol', 'source_port', 'dest_port'])
 
 class Firewall(P4switch):
-    def __init__(self,name :str,peer1 : str,peer2 : str):
-        super().__init__(name)
+    def __init__(self,name :str,peer1 : str,peer2 : str,topo : LogicTopo):
+        super().__init__(name,topo)
         self.peer_port = [self.topo.node_to_node_port_num(name,peer1),
                           self.topo.node_to_node_port_num(name,peer2)]
 

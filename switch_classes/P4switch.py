@@ -1,4 +1,4 @@
-from ExtendedTopology import load_etopo
+from LogicTopo import LogicTopo, load_logictopo
 from p4utils.utils.sswitch_thrift_API import SimpleSwitchThriftAPI
 from p4utils.utils.compiler import * 
 from collections import namedtuple
@@ -8,7 +8,7 @@ class NodeInfo:
     """ Contains inforamtion about a node ip mac port
     it is relative about another node (especially for the port)"""
     
-    def __init__(self,base_node : str ,node_name : str, topo : p4utils.utils.topology) :
+    def __init__(self,base_node : str ,node_name : str, topo : LogicTopo) :
         """ base_node is the name of the node from the info are taken node_name is the name
         of the node that's  info will be taken.
         """
@@ -21,9 +21,9 @@ class NodeInfo:
 
 
 class P4switch:
-    def __init__(self,name : str, ) -> None:
+    def __init__(self,name : str,topo : LogicTopo ) -> None:
         self.name = name
-        self.topo = load_etopo("ext_topology.json")
+        self.topo = topo
 
         self.api = SimpleSwitchThriftAPI(self.topo.get_thrift_port(name))
 

@@ -1,7 +1,8 @@
 
 from p4utils.utils.helper import load_topo
 from p4utils.utils.sswitch_thrift_API import SimpleSwitchThriftAPI
-from p4utils.utils.compiler import * 
+from p4utils.utils.compiler import *
+from LogicTopo import LogicTopo 
 from switch_classes.P4switch import P4switch,NodeInfo
 
 SEC_METER = 0.000001
@@ -10,8 +11,8 @@ class LoadBalancer(P4switch):
     
     
     
-    def __init__(self, name :str, in_ : str, out : list ):
-        super().__init__(name)
+    def __init__(self, name :str, in_ : str, out : list,topo : LogicTopo ):
+        super().__init__(name,topo)
         self.in_info = NodeInfo(name,in_,self.topo)
         
         
