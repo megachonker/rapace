@@ -6,7 +6,7 @@ from switch_classes.loadbalancer import LoadBalancer
 from switch_classes.firewall import Firewall,Flow
 from p4utils.utils.helper import load_topo
 
-from ExtendedTopology import extendtopology
+from LogicTopo import LogicTopo
 
 
 
@@ -14,14 +14,26 @@ def init_switch():
     with open('conf.yaml', 'r') as file:
         data = yaml.safe_load(file)
     # Load la topo pour avoir les interface thrift
-    extendtopology("topology.json","ext_topology.json")
+
+
+    topo  = load_topo("topology.json")
+    logic_topo = LogicTopo()
+    
+    logic_topo.from_physic(topo)
+    
+    
     
     switchs =  {}
     # Parcourir les éléments du fichier YAML pour créer des instances de Repeater
     for switch in data['switchs']:
+        
+        
         name = switch['name']
         role = switch['role']
         connections = switch['connect']
+        
+        
+        logic_topo.switch_info(name,role,connections)
 
         if role == "Repeater":
             switchs[name]=Repeater(name, *connections)
@@ -60,6 +72,8 @@ def init_switch():
             
         else:
             print(f"Warning: Unknown role {role} for switch {name}")
+            
+    logic_topo.save_topo("logic_topology.json")
     return switchs
 
 init_switch()
