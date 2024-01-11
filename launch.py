@@ -10,8 +10,8 @@ from LogicTopo import LogicTopo
 
 
 
-def init_switch():
-    with open('conf.yaml', 'r') as file:
+def init_switch(conf_path='topo_conf/conf.yaml'):
+    with open(conf_path, 'r') as file:
         data = yaml.safe_load(file)
     # Load la topo pour avoir les interface thrift
 
@@ -81,7 +81,13 @@ def init_switch():
     return switchs
 
 
-init_switch()
+
+if __name__ == '__main__':
+    import sys 
+    if len(sys.argv) >1:
+        init_switch(sys.argv[1])
+    else:
+        init_switch()
 
 
 

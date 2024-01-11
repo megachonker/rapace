@@ -19,7 +19,6 @@ def main(Cli=True):
     # net.disableArpTables()
 
     # Network definition
-    net.addP4Switch('s0')
     net.addP4Switch('s1')
     net.addP4Switch('s2')
     net.addP4Switch('s3')
@@ -28,7 +27,6 @@ def main(Cli=True):
     net.addP4Switch('s6')
     net.addP4Switch('s7')
 
-    net.addHost('h0')
     net.addHost('h1')
     net.addHost('h2')
     net.addHost('h3')
@@ -38,13 +36,6 @@ def main(Cli=True):
     net.addHost('h7')
 
 
-    net.addLink('s0','s1')
-    net.addLink('s0','s2')
-    net.addLink('s0','s3')
-    net.addLink('s0','s4')
-    net.addLink('s0','s5')
-    net.addLink('s0','s6')
-    net.addLink('s0','s7')
     net.addLink('s1','s2')
     net.addLink('s1','s3')
     net.addLink('s1','s4')
@@ -68,7 +59,6 @@ def main(Cli=True):
     net.addLink('s6','s7')
 
 
-    net.addLink('h0','s0')
     net.addLink('h1','s1')
     net.addLink('h2','s2')
     net.addLink('h3','s3')
