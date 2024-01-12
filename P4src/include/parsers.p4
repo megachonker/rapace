@@ -11,7 +11,6 @@ parser MyParser(packet_in packet,
     state start {
 
         transition parse_ethernet;
-
     }
 
     state parse_ethernet {

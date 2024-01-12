@@ -6,6 +6,7 @@ const bit<16> TYPE_IPV4 = 0x800;
 const bit<8>  TYPE_TCP  = 6;
 const bit<8>  TYPE_UDP  = 17;
 const bit<8>  TYPE_LOSS = 0xFC;
+const bit<8>  TYPE_ENCAP = 0xFF;//utiliser pour signaler de ne pas interpretter up
 
 typedef bit<9>  egressSpec_t;
 typedef bit<48> macAddr_t;
@@ -76,5 +77,10 @@ struct headers {
     ipv4_t       ipv4;
     tcp_t        tcp;
     udp_t        udp;
+}
+
+struct headers_stacked {
+    ethernet_t   ethernet;
+    ipv4_t[20]       ipv4;
 }
 

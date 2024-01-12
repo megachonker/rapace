@@ -28,6 +28,7 @@ class Router(P4switch):
             next_hop = None
             if sw_dst == self.name:
                 #For the moment ignore -> decaplusalte in the future
+                self.api.table_add("encap_table","decap",[str(self.topo.get_switch_loopback(sw_dst))],[])
                 pass
             else:
                 try:
@@ -60,12 +61,16 @@ class Router(P4switch):
     def init_table(self):
         self.api.table_clear("ipv4_lpm")
         self.api.table_set_default("ipv4_lpm","drop",[])
+        self.api.table_set_default("encap_table","pass",[])
         self.routes()
     
-    def add_encap(self,ip,dst):
-        ip_dst_loopback = self.topo.get_switch_loopback(dst)
-        #azerazer
-        print(f"déviation de {ip} qui doit passer par {ip_dst_loopback}")
+    def add_encap(self,ip_matched,dst):
+        ip_src = self.topo.get_switch_loopback(self.name)
+        ip_dst = self.topo.get_switch_loopback(dst)
+        self.api.table_add("encap_table","encap",[str(ip_matched)],[str(ip_src),str(ip_dst)])
+        # self.api.table_add("encap_table","encap",["10.0.0.4"],["10.0.0.1","10.0.0.3"])
+        print(f"Encap pour ip match {ip_matched} aply => encap src:{ip_src} dst:{ip_dst}")
+        return f"Encap pour ip match {ip_matched} aply => encap src:{ip_src} dst:{ip_dst}"
 
     # controler function
     def stat(self):

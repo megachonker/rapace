@@ -28,6 +28,11 @@ def run():
                 rate = sys.argv[3]
                 response = stub.Change_rate(api_pb2.RateRequest(node=node,rate=float(rate)))
                 print("rate rull response:", response.result)
+            elif action == "encap":
+                ip_address = sys.argv[3]
+                nodedst = sys.argv[4]
+                response = stub.set_encap(api_pb2.SetEncapRequest(node=node,ip_address=ip_address,nodedst=nodedst))
+                print("encap:", response.answer)
             # Add more cases for other actions as needed.
             else:
                 print(f"Unknown action: {action}")

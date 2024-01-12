@@ -58,8 +58,7 @@ class MyService(api_pb2_grpc.MyServiceServicer):
    
     @grpc_error_handler
     def set_encap(self, request, context):
-        print("non implémenter")
-        return api_pb2.SetEncapResponce(stat_info=str(switchs[request.node].add_encap(request.ip_address,request.nodedst)))
+        return api_pb2.SetEncapResponce(answer=str(switchs[request.node].add_encap(request.ip_address,request.nodedst)))
     
     @grpc_error_handler
     def show_topo(self, request, context):
