@@ -16,6 +16,7 @@ class NodeInfo:
         self.mac = topo.node_to_node_mac(node_name,base_node)
         # self.ip = topo.node_to_node_interface_ip(node_name,base_node).split('/')[0]
         self.port = topo.node_to_node_port_num(base_node,node_name)
+        self.port = "" # The role of the switch : Repeater, Router ...
         
         
 
@@ -42,3 +43,8 @@ class P4switch:
         self.api.switch_info.load_json_config(self.api.client)
         self.api.table_entries_match_to_handle = self.api.create_match_to_handle_dict()
         self.api.load_table_entries_match_to_handle()
+        
+    def add_link(self,new_neigh,attribute):
+        """ Need to be overwrite do nothing. 
+        If attribute is not necessary or not correct it is just ignore"""
+        pass

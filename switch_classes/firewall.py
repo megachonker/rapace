@@ -12,6 +12,7 @@ Flow = namedtuple('Flow', ['source_ip', 'dest_ip', 'protocol', 'source_port', 'd
 class Firewall(P4switch):
     def __init__(self,name :str,peer1 : str,peer2 : str,topo : LogicTopo):
         super().__init__(name,topo)
+        self.role = "Firewall"
         self.peer_port = [self.topo.node_to_node_port_num(name,peer1),
                           self.topo.node_to_node_port_num(name,peer2)]
 
@@ -32,7 +33,7 @@ class Firewall(P4switch):
         self.api.table_add("route","forward",[str(self.peer_port[0])],[str(self.peer_port[1])])
         self.api.table_add("route","forward",[str(self.peer_port[1])],[str(self.peer_port[0])])
 
-    # controler function
+    # controler function --> put in P4switchs No ? 
     def stat(self):
         print(f"stat du switch {self.name} Firewall")    
         return [self.api.counter_read('total_packet', 0),self.api.counter_read('filter_hit', 0)]
@@ -45,3 +46,7 @@ class Firewall(P4switch):
     # firewall function
     def add_drop_rule(self,rule:Flow):
         self.api.table_add("rule","drop",[str(rule.source_ip),str(rule.dest_ip),str(rule.protocol),str(rule.source_port),str(rule.dest_port)],[])
+
+    def add_link(self,new_neigh,attribute):
+        self.next_link.put(new_neigh)
+        return f"[{self.name}] the new  link is store, delete a curent link to aplly it (firewall can only have to link)"

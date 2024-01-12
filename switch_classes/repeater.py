@@ -9,6 +9,7 @@ from switch_classes.P4switch import P4switch
 class Repeater(P4switch):
     def __init__(self,name :str,peer1 : str,peer2 : str , topo : LogicTopo):
         super().__init__(name,topo)
+        self.role = "Repeater"
         self.peer_port = [self.topo.node_to_node_port_num(name,peer1),
                           self.topo.node_to_node_port_num(name,peer2)]
         
@@ -33,3 +34,7 @@ class Repeater(P4switch):
     def reset(self):
         print(f"reset du switch {self.name}")
         self.init_table()
+
+    def add_link(self,new_neigh,attribute):
+        self.next_link.put(new_neigh)
+        return f"[{self.name}] the new  link is store, delete a curent link to aplly it (repeater can only have to link)"

@@ -33,7 +33,12 @@ def run():
                 nodedst = sys.argv[4]
                 response = stub.set_encap(api_pb2.SetEncapRequest(node=node,ip_address=ip_address,nodedst=nodedst))
                 print("encap:", response.answer)
-            # Add more cases for other actions as needed.
+            elif action == "weight":
+                node2=sys.argv[3] #Marche pas
+                weight = sys.argv[4]
+                response = stub.change_weight((node,node2),weight)
+                
+                                
             else:
                 print(f"Unknown action: {action}")
     except grpc.RpcError as e:
