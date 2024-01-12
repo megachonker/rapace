@@ -62,21 +62,19 @@ switchs:
   - name: s1
     role: Router
     connect: [h1, s2, s3]
-    in: h1  #the rest is out
     
   - name: s2
-    role: Router
-    connect : [s1,s5]
+    role: Repeater
+    connect : [s1,s4]
   
   - name: s3
-    role: Router
-    connect: [s1,s4]
+    role: Repeater
+    connect: [s1,s5]
 
   - name: s4
     role: Router
     connect: [h4, s2, s5]
-    in: h4
 
   - name: s5
     role: Router
-    connect: [s1,s2,s4]
+    connect: [s1,s3,s4]

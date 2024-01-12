@@ -12,7 +12,8 @@ class Router(P4switch):
     
     def __init__(self, name :str, connexion : list,topo : LogicTopo ):
         super().__init__(name,topo)
-        
+        print(f"topo::::::{topo}" )
+        self.custom_topo=topo
         
         self.port_info = []
         for connex in connexion:
@@ -25,6 +26,8 @@ class Router(P4switch):
     def routes(self):
         #Route for switchs loopback (and host inside)
         for sw_dst in self.topo.get_p4switches():
+            debugl = self.custom_topo.get_neighbors(sw_dst)
+            print(f"Voisin de {sw_dst}: {debugl}")
             next_hop = None
             if sw_dst == self.name:
                 #For the moment ignore -> decaplusalte in the future
@@ -41,7 +44,7 @@ class Router(P4switch):
                     next_hop = paths[0][1]
                     port = self.topo.node_to_node_port_num(self.name,next_hop)
                     mac = self.topo.node_to_node_mac(next_hop,self.name)
-                    print("add entry :", "ipv4_lpm","forward",[str(ip)],[mac,str(port)])
+                    print("add entry :",f"{self.name}=>{sw_dst} using {next_hop}|", "ipv4_lpm","forward",[str(ip)],[mac,str(port)])
                     self.api.table_add("ipv4_lpm","forward",[str(ip)],[mac,str(port)])
                     
             #host linked to this switchs
@@ -68,7 +71,6 @@ class Router(P4switch):
         ip_src = self.topo.get_switch_loopback(self.name)
         ip_dst = self.topo.get_switch_loopback(dst)
         self.api.table_add("encap_table","encap",[str(ip_matched)],[str(ip_src),str(ip_dst)])
-        # self.api.table_add("encap_table","encap",["10.0.0.4"],["10.0.0.1","10.0.0.3"])
         print(f"Encap pour ip match {ip_matched} aply => encap src:{ip_src} dst:{ip_dst}")
         return f"Encap pour ip match {ip_matched} aply => encap src:{ip_src} dst:{ip_dst}"
 
