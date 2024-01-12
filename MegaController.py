@@ -110,9 +110,41 @@ class MegaController:
         self.logic_topo.save_topo(self.logic_topo_path)
         
     def newtopo_router(self):
+        """ Reload the router pass the new topo to the switch (and recalculate route) """
         for _,switch in self.switchs.items():
-            if switch.isRouter():
+            if switch.role == "Router":
                 switch.newtopo_recalculate(self.logic_topo)
+    
+    def add_link(self,link : (str,str),attribute=('','')):
+        """ Add link to the topo and updtae the switch. 
+            Attributes is for example in for a loadbalancer"""
+        if self.logic_topo.are_neighbors(link[0],link[1]):
+            return f"There is already a link between {link[0]} and {link[1]}"
+
+        if self.logic_topo.isHost(link[0]) and self.topo.isHost(link[1]):
+            return f"Error can not link to host"
+        
+        if (not self.logic_topo.isHost(link[0])) and self.switchs.get(link[0]) is None:
+            return f"{link[0] } has no role, link can not be added to it"
+        
+        if (not self.logic_topo.isHost(link[1])) and self.switchs.get(link[1]) is None:
+            return f"{link[1] } has no role, link can not be added to it"
+            
+        reponses =[]
+        if not self.logic_topo.isHost(link[0]):
+            reponses.append(self.switchs[link[0]].add_link(link[1],attribute[0]))
+        if not self.logic_topo.isHost(link[1]):
+            reponses.append(self.switchs[link[1]].add_link(link[0],attribute[1]))
+        self.logic_topo.add_link(link[0],link[1])
+        
+        self.newtopo_router()
+        
+        return reponses
+        
+        
+        
+        
+        
                 
     
     
@@ -125,10 +157,9 @@ if __name__ == '__main__':
         mg = MegaController(conf_path=sys.argv[1])
     else:
         mg = MegaController()
-    mg.change_weight(('s1','s2'),300)
-    input("(Normally trafic is : s1-s3-s4. Enter to new change")
-    mg.change_weight(('s3','s4'),300)
-    print("Now trffic must be s1-s3-s2-s4")
+    input("New link ...")
+    for rep in mg.add_link(('s2','h2')):
+        print(rep)
 
 
 # # network.stop()

@@ -74,7 +74,7 @@ class MyService(api_pb2_grpc.MyServiceServicer):
         return api_pb2.ChangeLinkResponce(f"rm_link unimplementer {request.nodeA} et {request.nodeB}")
     
     @grpc_error_handler
-    def change_weight(self, request, context):
+    dthriftef change_weight(self, request, context):
         return api_pb2.ChangeLinkResponce(f"mega_controller.change_weight() {request.lien} et {request.weight}")
         
     

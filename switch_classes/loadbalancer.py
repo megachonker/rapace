@@ -4,6 +4,7 @@ from p4utils.utils.sswitch_thrift_API import SimpleSwitchThriftAPI
 from p4utils.utils.compiler import *
 from LogicTopo import LogicTopo 
 from switch_classes.P4switch import P4switch,NodeInfo
+from queue import Queue
 
 SEC_METER = 0.000001
 
@@ -13,10 +14,15 @@ class LoadBalancer(P4switch):
     
     def __init__(self, name :str, in_ : str, out : list,topo : LogicTopo ):
         super().__init__(name,topo)
+        self.role = "LoadBalancer"
         self.in_info = NodeInfo(name,in_,self.topo)
         
         
         self.rates_max = 1* SEC_METER #1 sec
+        
+        
+        self.next_in = Queue()  #Use when swap node/link to store potential next in
+        # out_backup is not needed because we can put inifinit output port
         
         self.out_info = []
         for o in out:
@@ -80,4 +86,12 @@ class LoadBalancer(P4switch):
         self.api.meter_array_set_rates("the_meter",[(self.rates_max/2,1),(self.rates_max,1)])
         return f"new rate set to {self.rates_max}"
         
-        
+    def add_link(self,new_neigh,attribute):
+        if attribute =='in':
+            self.next_in.put(new_neigh)
+            return f"[{self.name}] the new in link is store, delete the previous one the aplly it"
+        else:
+            self.out_info.append(NodeInfo(self.name,new_neigh,self.topo))
+            self.init_table()  #Refill the tables
+            return f"[{self.name}] new outup added"
+            

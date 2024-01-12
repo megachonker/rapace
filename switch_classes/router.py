@@ -13,10 +13,10 @@ class Router(P4switch):
     def __init__(self, name :str, connexion : list,topo : LogicTopo ):
         super().__init__(name,topo)
         
-        
+        self.role = "Router"
         self.port_info = []
         for connex in connexion:
-            self.port_info.append(NodeInfo(name,connex,self.topo))
+            self.port_info.append(NodeInfo(name,connex,self.topo))  #useless
 
         self.compile_and_push("P4src/router.p4","P4src/router.json")
         self.init_table()
@@ -75,10 +75,14 @@ class Router(P4switch):
     def reset(self):
         print(f"reset du switch {self.name}")
         self.init_table()
-        
-    def isRouter(self):
-        return True
+
     
     def newtopo_recalculate(self,new_topo : LogicTopo):
         self.topo = new_topo
         self.reset() #For the moment reset, but in the future can just adjut the route ...
+
+
+    def add_link(self,new_neigh,attribute):
+        #do nothing because rotes do all of the jobes (router can have infit neighbour)
+        return f"[{self.name}]New link "
+        pass
