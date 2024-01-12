@@ -29,7 +29,10 @@ parser MyParser(packet_in packet,
 
     state parse_ipv4 {
         packet.extract(hdr.ipv4.next);
-        transition accept;
+        transition select(hdr.ipv4.last.protocol) {
+            TYPE_ENCAP: parse_ipv4;
+            default: accept;
+        }
     }
 }
 
@@ -73,6 +76,7 @@ control MyIngress(inout headers_stacked hdr,
     }
 
     action decap(){
+        // hdr.ipv4[1].setInvalid();
         hdr.ipv4.pop_front(1);
     }
 
@@ -80,8 +84,10 @@ control MyIngress(inout headers_stacked hdr,
     action encap(ip4Addr_t source,ip4Addr_t destination){
         //fait de la place pour un nouveaux header
         hdr.ipv4.push_front(1);
+        hdr.ipv4[0].setValid();
         hdr.ipv4[0].srcAddr=source;
         hdr.ipv4[0].dstAddr=destination;
+        hdr.ipv4[0].protocol=TYPE_ENCAP;
     }
 
 

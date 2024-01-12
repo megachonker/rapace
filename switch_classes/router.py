@@ -12,12 +12,12 @@ class Router(P4switch):
     
     def __init__(self, name :str, connexion : list,topo : LogicTopo ):
         super().__init__(name,topo)
-        print(f"topo::::::{topo}" )
-        self.custom_topo=topo
         self.role = "Router"
         self.port_info = []
         for connex in connexion:
             self.port_info.append(NodeInfo(name,connex,self.topo))  #useless
+        
+        print(f"Voisin de {self.name}: {self.topo.get_neighbors(self.name)}")
 
         self.compile_and_push("P4src/router.p4","P4src/router.json")
         self.init_table()
@@ -26,8 +26,6 @@ class Router(P4switch):
     def routes(self):
         #Route for switchs loopback (and host inside)
         for sw_dst in self.topo.get_p4switches():
-            debugl = self.custom_topo.get_neighbors(sw_dst)
-            print(f"Voisin de {sw_dst}: {debugl}")
             next_hop = None
             if sw_dst == self.name:
                 #For the moment ignore -> decaplusalte in the future
@@ -63,6 +61,7 @@ class Router(P4switch):
 
     def init_table(self):
         self.api.table_clear("ipv4_lpm")
+        self.api.table_clear("encap_table")
         self.api.table_set_default("ipv4_lpm","drop",[])
         self.api.table_set_default("encap_table","pass",[])
         self.routes()

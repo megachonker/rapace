@@ -81,6 +81,6 @@ struct headers {
 
 struct headers_stacked {
     ethernet_t   ethernet;
-    ipv4_t[20]       ipv4;
+    ipv4_t[3]       ipv4;
 }
 
