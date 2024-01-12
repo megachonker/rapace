@@ -4,9 +4,9 @@ import api_pb2
 import api_pb2_grpc
 from switch_classes.firewall import Flow
 
-import launch
+import MegaController
 
-switchs = launch.init_switch()
+mega_controller = MegaController.init_switch()
 
 import functools
 import logging
@@ -31,12 +31,12 @@ def grpc_error_handler(f):
 class MyService(api_pb2_grpc.MyServiceServicer):
     @grpc_error_handler
     def Reset(self, request, context):
-        switchs[request.node].reset()
+        mega_controller.switchs[request.node].reset()
         return api_pb2.ResetResponse(message=True)
 
     @grpc_error_handler
     def GetStat(self, request, context):
-        return api_pb2.StatResponse(stat_info=str(switchs[request.node].stat()))
+        return api_pb2.StatResponse(stat_info=str(mega_controller.switchs[request.node].stat()))
 
     @grpc_error_handler
     def AddFirewallRule(self, request, context):
@@ -49,17 +49,17 @@ class MyService(api_pb2_grpc.MyServiceServicer):
         }
         rule = Flow(request.source_ip, request.dest_ip,  translate.get(request.protocol), request.source_port, request.dest_port)
         print(f"try append firewall rule at {rule}")
-        switchs[request.node].add_drop_rule(rule)
+        mega_controller.switchs[request.node].add_drop_rule(rule)
         return api_pb2.AddFirewallRuleResponse(message=True)
     
     @grpc_error_handler
     def Change_rate(self, request, context):
-        return api_pb2.ChangeRateResponse(result=str(switchs[request.node].set_rates_lb(request.rate)))
+        return api_pb2.ChangeRateResponse(result=str(mega_controller.switchs[request.node].set_rates_lb(request.rate)))
    
     @grpc_error_handler
     def set_encap(self, request, context):
         print("non implémenter")
-        return api_pb2.SetEncapResponce(stat_info=str(switchs[request.node].add_encap(request.ip_address,request.nodedst)))
+        return api_pb2.SetEncapResponce(stat_info=str(mega_controller.switchs[request.node].add_encap(request.ip_address,request.nodedst)))
     
     @grpc_error_handler
     def show_topo(self, request, context):

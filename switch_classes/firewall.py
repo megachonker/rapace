@@ -32,7 +32,7 @@ class Firewall(P4switch):
         self.api.table_add("route","forward",[str(self.peer_port[0])],[str(self.peer_port[1])])
         self.api.table_add("route","forward",[str(self.peer_port[1])],[str(self.peer_port[0])])
 
-    # controler function
+    # controler function --> put in P4switchs No ? 
     def stat(self):
         print(f"stat du switch {self.name} Firewall")    
         return [self.api.counter_read('total_packet', 0),self.api.counter_read('filter_hit', 0)]
