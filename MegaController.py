@@ -96,14 +96,24 @@ class MegaController:
     def change_weight(self,link : (str,str), weight : int):
         if not self.logic_topo.are_neighbors(link[0],link[1]):
             return f"{link[0]} and {link[1]} are not neighbors"
+        self.logic_topo.edges[link]['weight'] = weight
         
+        self.newtopo_router()
         
         self.save_topo()
+        
+        return f"Ok"
         
     
 
     def save_topo(self):
         self.logic_topo.save_topo(self.logic_topo_path)
+        
+    def newtopo_router(self):
+        for _,switch in self.switchs.items():
+            if switch.isRouter():
+                switch.newtopo_recalculate(self.logic_topo)
+                
     
     
     
@@ -115,7 +125,10 @@ if __name__ == '__main__':
         mg = MegaController(conf_path=sys.argv[1])
     else:
         mg = MegaController()
-
+    mg.change_weight(('s1','s2'),300)
+    input("(Normally trafic is : s1-s3-s4. Enter to new change")
+    mg.change_weight(('s3','s4'),300)
+    print("Now trffic must be s1-s3-s2-s4")
 
 
 # # network.stop()

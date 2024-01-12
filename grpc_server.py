@@ -4,9 +4,9 @@ import api_pb2
 import api_pb2_grpc
 from switch_classes.firewall import Flow
 
-import MegaController
+from MegaController import MegaController
 
-mega_controller = MegaController.init_switch()
+mega_controller = MegaController()
 
 import functools
 import logging
@@ -75,7 +75,8 @@ class MyService(api_pb2_grpc.MyServiceServicer):
     
     @grpc_error_handler
     def change_weight(self, request, context):
-        return api_pb2.ChangeLinkResponce(f"changer poid unimplementer {request.lien} et {request.weight}")
+        return api_pb2.ChangeLinkResponce(f"mega_controller.change_weight() {request.lien} et {request.weight}")
+        
     
 
 def serve():

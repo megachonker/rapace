@@ -28,7 +28,12 @@ def run():
                 rate = sys.argv[3]
                 response = stub.Change_rate(api_pb2.RateRequest(node=node,rate=float(rate)))
                 print("rate rull response:", response.result)
-            # Add more cases for other actions as needed.
+            elif action == "weight":
+                node2=sys.argv[3] #Marche pas
+                weight = sys.argv[4]
+                response = stub.change_weight((node,node2),weight)
+                
+                                
             else:
                 print(f"Unknown action: {action}")
     except grpc.RpcError as e:

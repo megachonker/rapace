@@ -75,3 +75,10 @@ class Router(P4switch):
     def reset(self):
         print(f"reset du switch {self.name}")
         self.init_table()
+        
+    def isRouter(self):
+        return True
+    
+    def newtopo_recalculate(self,new_topo : LogicTopo):
+        self.topo = new_topo
+        self.reset() #For the moment reset, but in the future can just adjut the route ...

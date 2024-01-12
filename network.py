@@ -56,5 +56,5 @@ if __name__ == '__main__':
             quit()
         main(Cli=True,nb_switch=nb_switch)
             
-
-    main(Cli=True)
+    else:
+        main(Cli=True)

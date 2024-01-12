@@ -1,0 +1,21 @@
+
+# DO not modify, create another one if you want
+# ***REMOVED***
+
+
+switchs:
+  - name: s1
+    role: Router
+    connect: [h1, s2, s3]
+    
+  - name: s2
+    role: Router
+    connect : [s1,s3,s4]
+  
+  - name: s3
+    role: Router
+    connect: [s1,s2,s4]
+
+  - name: s4
+    role: Router
+    connect: [h4, s2, s3]

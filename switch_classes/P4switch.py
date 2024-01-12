@@ -42,3 +42,6 @@ class P4switch:
         self.api.switch_info.load_json_config(self.api.client)
         self.api.table_entries_match_to_handle = self.api.create_match_to_handle_dict()
         self.api.load_table_entries_match_to_handle()
+        
+    def isRouter(self):
+        return False
