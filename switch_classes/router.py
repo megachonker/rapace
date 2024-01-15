@@ -66,12 +66,12 @@ class Router(P4switch):
         self.api.table_set_default("encap_table","pass",[])
         self.routes()
     
-    def add_encap(self,ip_matched,dst):
+    def add_encap(self,ip_matched:str,dst:str):
         ip_src = self.topo.get_switch_loopback(self.name)
         ip_dst = self.topo.get_switch_loopback(dst)
         self.api.table_add("encap_table","encap",[str(ip_matched)],[str(ip_src),str(ip_dst)])
-        print(f"Encap pour ip match {ip_matched} aply => encap src:{ip_src} dst:{ip_dst}")
-        return f"Encap pour ip match {ip_matched} aply => encap src:{ip_src} dst:{ip_dst}"
+        print(f"Encap for  {ip_matched} aply => encap src:{ip_src} dst:{ip_dst}")
+        return f"Encap for {ip_matched} aply => encap src:{ip_src} dst:{ip_dst}"
 
     # controler function
     def stat(self):

@@ -157,9 +157,9 @@ if __name__ == '__main__':
         mg = MegaController(conf_path=sys.argv[1])
     else:
         mg = MegaController()
-    input("New link ...")
-    for rep in mg.add_link(('s2','h2')):
-        print(rep)
+    input("Encap  ...")
+    mg.switchs["s1"].add_encap("10.0.0.2","s4")
+ 
 
 
 # # network.stop()
