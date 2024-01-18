@@ -171,7 +171,6 @@ class MegaController:
                 
     
     
-    
 
 
 if __name__ == '__main__':
@@ -181,8 +180,13 @@ if __name__ == '__main__':
     else:
         mg = MegaController()
 
-    input("remove link 2  ...")
-    mg.remove_link(('s1','s2'))
+    input("Add link")
+    print(mg.add_link(('s2','s3')))
+    input("remove link")
+    print(mg.remove_link(('s2','h2')))
+    input("remove link2")
+    print(mg.remove_link(('s3','h3')))
+    
 
     
  

@@ -16,7 +16,6 @@ class NodeInfo:
         self.mac = topo.node_to_node_mac(node_name,base_node)
         # self.ip = topo.node_to_node_interface_ip(node_name,base_node).split('/')[0]
         self.port = topo.node_to_node_port_num(base_node,node_name)
-        self.port = "" # The role of the switch : Repeater, Router ...
         
         
 
