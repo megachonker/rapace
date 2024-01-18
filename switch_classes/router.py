@@ -85,10 +85,26 @@ class Router(P4switch):
     
     def newtopo_recalculate(self,new_topo : LogicTopo):
         self.topo = new_topo
-        self.reset() #For the moment reset, but in the future can just adjut the route ...
-
+        self.update_tables() 
+        
+    def update_tables(self): #For the moment reset, but in the future can just adjut the route ...
+        self.reset()
 
     def add_link(self,new_neigh,attribute):
         #do nothing because rotes do all of the jobes (router can have infit neighbour)
+        self.port_info.append(NodeInfo(self.name,new_neigh,self.topo))
         return f"[{self.name}]New link "
         pass
+    
+    def can_remove_link(self,neighboor:str):
+        """ Need to be oerwride """
+        return True #A router can always remove one of his link (can has zero link)
+
+    def remove_link(self,neighboor:str):
+        for n in self.port_info:
+            if n.name == neighboor:
+                self.port_info.remove(n)
+                # self.update_tables()  The megacotroller will force router to updates tables
+                return
+        
+        raise Exception("not in neighboor list")

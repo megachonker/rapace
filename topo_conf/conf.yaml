@@ -65,12 +65,12 @@ switchs:
     
   - name: s2
     role: Router
-    connect : [h2,s1,s3]
+    connect : [h2,s1]
   
-  - name: s3
-    role: Router
-    connect: [s4, s2]
+  # - name: s3
+  #   role: Router
+  #   connect: [s4, s2]
 
-  - name: s4
-    role: Router
-    connect: [h4,s3]
+  # - name: s4
+  #   role: Router
+  #   connect: [h4,s3]

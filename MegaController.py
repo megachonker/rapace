@@ -121,7 +121,7 @@ class MegaController:
         if self.logic_topo.are_neighbors(link[0],link[1]):
             return f"There is already a link between {link[0]} and {link[1]}"
 
-        if self.logic_topo.isHost(link[0]) and self.topo.isHost(link[1]):
+        if self.logic_topo.isHost(link[0]) and self.logic_topo.isHost(link[1]):
             return f"Error can not link to host"
         
         if (not self.logic_topo.isHost(link[0])) and self.switchs.get(link[0]) is None:
@@ -141,6 +141,29 @@ class MegaController:
         
         return reponses
         
+    def remove_link(self, link : (str,str)):
+        if not self.logic_topo.are_neighbors(link[0],link[1]):
+            return f"There is any link between {link[0]} and {link[1]}"
+        isswitch0 = self.logic_topo.isSwitch(link[0])
+        isswitch1 = self.logic_topo.isSwitch(link[1])
+        
+        if  isswitch0 and ( not self.switchs[link[0]].can_remove_link(link[1]) ):
+            return f"{link[0]} can not remove his link"
+
+        if  isswitch1 and (not self.switchs[link[1]].can_remove_link(link[0])) :
+            return f"{link[1]} can not remove his link"
+        
+        if isswitch0 :
+            self.switchs[link[0]].remove_link(link[1])
+        if isswitch1:
+            self.switchs[link[1]].remove_link(link[0])
+        
+        self.logic_topo.remove_edge(link[0],link[1])
+        
+        self.newtopo_router()
+        
+        return f"Link remove succefully"
+        
         
         
         
@@ -157,8 +180,11 @@ if __name__ == '__main__':
         mg = MegaController(conf_path=sys.argv[1])
     else:
         mg = MegaController()
-    input("Encap  ...")
-    mg.switchs["s1"].add_encap("10.0.0.2","s4")
+
+    input("remove link 2  ...")
+    mg.remove_link(('s1','s2'))
+
+    
  
 
 

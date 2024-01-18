@@ -48,3 +48,11 @@ class P4switch:
         """ Need to be overwrite do nothing. 
         If attribute is not necessary or not correct it is just ignore"""
         pass
+    
+    def can_remove_link(self,neighboor:str):
+        """ Need to be overwride """
+        pass
+    
+    def remove_link(self,neighboor:str):
+        """ Need to be overwride """
+        pass
