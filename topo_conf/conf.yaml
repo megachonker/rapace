@@ -60,17 +60,17 @@ switchs:
 
 
   - name: s1
-    role: Repeater
-    connect: [h1, s2]
+    role: LoadBalancer
+    connect: [h1, s2,s3]
+    in : h1
     
   - name: s2
-    role: Firewall
-    connect : [h2,s1]
+    role: Router
+    connect : [h2,s1,s3]
   
   - name: s3
-    role: Repeater
-    connect: [h3,s4]
+    role: LoadBalancer
+    connect: [h3,s1,s2]
+    in : h3
 
-  - name: s4
-    role: Repeater
-    connect: [h4,s3]
+
