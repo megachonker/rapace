@@ -94,4 +94,19 @@ class LoadBalancer(P4switch):
             self.out_info.append(NodeInfo(self.name,new_neigh,self.topo))
             self.init_table()  #Refill the tables
             return f"[{self.name}] new outup added"
+        
+    def can_remove_link(self,neighboor:str):
+        if self.in_info.name == neighboor : 
+            return not self.next_in.empty()
+        return len(self.out_info)>1
+    
+    def remove_link(self,neighboor:str):
+        if self.in_info.name == neighboor :
+            self.in_info = NodeInfo(self.name,self.next_in.get(),self.topo)
+        else:
+            for n in self.out_info:
+                if n.name == neighboor:
+                    self.out_info.remove(n)
+        
+        self.reset()
             

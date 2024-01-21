@@ -16,7 +16,6 @@ class NodeInfo:
         self.mac = topo.node_to_node_mac(node_name,base_node)
         # self.ip = topo.node_to_node_interface_ip(node_name,base_node).split('/')[0]
         self.port = topo.node_to_node_port_num(base_node,node_name)
-        self.port = "" # The role of the switch : Repeater, Router ...
         
         
 
@@ -47,4 +46,12 @@ class P4switch:
     def add_link(self,new_neigh,attribute):
         """ Need to be overwrite do nothing. 
         If attribute is not necessary or not correct it is just ignore"""
+        pass
+    
+    def can_remove_link(self,neighboor:str):
+        """ Need to be overwride """
+        pass
+    
+    def remove_link(self,neighboor:str):
+        """ Need to be overwride """
         pass
