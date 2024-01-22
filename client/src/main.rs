@@ -1,10 +1,10 @@
 use std::env;
 use tonic::{transport::Channel, Request};
+use api::{ Node,my_service_client::MyServiceClient};
 
-// Importez les modules générés par protoc (protobuf compiler) pour Rust ici.
-// Par exemple:
-// mod api;
-// use api::{api_client::ApiClient, Node, GetStatRequest, ...};
+pub mod api {
+    tonic::include_proto!("myservice");
+}
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -22,7 +22,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .connect()
         .await?;
 
-    let mut client = ApiClient::new(channel);
+    let mut client = MyServiceClient::new(channel);
 
     match action.as_str() {
         "stat" => {
