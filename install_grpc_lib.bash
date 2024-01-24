@@ -3,6 +3,8 @@ if [ -z "$1" ]
     apt update
     apt install python3.7-venv virtualenv -y
 
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
     virtualenv venv --python=python3.7
     source venv/bin/activate
     python -m pip install grpcio
