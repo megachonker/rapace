@@ -11,7 +11,7 @@ class Router(P4switch):
     
     
     def __init__(self, name :str, connexion : list,topo : LogicTopo ):
-        super().__init__(name,topo)
+        super().__init__(name,connexion,topo)
         self.role = "Router"
         self.port_info = []
         for connex in connexion:
@@ -59,11 +59,14 @@ class Router(P4switch):
                     self.api.table_add("ipv4_lpm","forward",[str(ip)],[mac,str(port)])
 
 
-    def init_table(self):
+    def clear_table(self):
         self.api.table_clear("ipv4_lpm")
         self.api.table_clear("encap_table")
         self.api.table_set_default("ipv4_lpm","drop",[])
         self.api.table_set_default("encap_table","pass",[])
+
+    def init_table(self):
+        self.clear_table()
         self.routes()
     
     def add_encap(self,ip_matched:str,dst:str):

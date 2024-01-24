@@ -21,10 +21,13 @@ class NodeInfo:
 
 
 class P4switch:
-    def __init__(self,name : str,topo : LogicTopo ) -> None:
+    def __init__(self,name : str,connect,topo : LogicTopo ) -> None:
         self.name = name
         self.topo = topo
-
+        self.connect = []
+        for c in connect:
+            self.connect.append(NodeInfo(name,c,topo))
+        
         self.api = SimpleSwitchThriftAPI(self.topo.get_thrift_port(name))
 
 
@@ -36,6 +39,9 @@ class P4switch:
         self.api.swap_configs()
         
     def init_table(self):
+        pass
+    
+    def clear_table(self):
         pass
     
     def mininet_update(self):

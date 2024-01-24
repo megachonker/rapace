@@ -13,9 +13,9 @@ class LoadBalancer(P4switch):
     
     
     def __init__(self, name :str, in_ : str, out : list,topo : LogicTopo ):
-        super().__init__(name,topo)
+        super().__init__(name,out + [in_],topo)
         self.role = "LoadBalancer"
-        self.in_info = NodeInfo(name,in_,self.topo)
+        
         
         
         self.rates_max = 1* SEC_METER #1 sec
@@ -25,8 +25,11 @@ class LoadBalancer(P4switch):
         # out_backup is not needed because we can put inifinit output port
         
         self.out_info = []
-        for o in out:
-            self.out_info.append(NodeInfo(name,o,self.topo))
+        for o in self.connect:
+            if o.name == in_:
+                self.in_info = o
+            else:
+                self.out_info.append(o)
         
         
         self.compile_and_push("P4src/loadbalancer.p4","P4src/loadbalancer.json")
@@ -35,10 +38,7 @@ class LoadBalancer(P4switch):
         self.mininet_update()
 
         
-    
-    def init_table(self):
-        
-        
+    def clear_table(self):
         self.api.table_clear("traffic_type")
         self.api.table_clear("ecmp_group_to_nhop")
         self.api.table_clear("filter")
@@ -47,6 +47,11 @@ class LoadBalancer(P4switch):
         self.api.table_set_default("traffic_type","drop",[])
         self.api.table_set_default("ecmp_group_to_nhop","drop",[])
         self.api.table_set_default("filter", "drop", [])
+    
+    def init_table(self):
+        
+        
+        self.clear_table()
         
        
         for out in self.out_info:

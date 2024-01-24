@@ -77,9 +77,6 @@ control MyIngress(inout headers hdr,
         hdr.ipv4.ttl = hdr.ipv4.ttl - 1;
     }
 
-    action advertise(){
-        //for the future --> advertise the controler/user that trafic if half full 
-    }
 
     table ecmp_group_to_nhop {
         key = {
@@ -117,7 +114,6 @@ control MyIngress(inout headers hdr,
         actions = {
             NoAction;
             drop;
-            advertise;
         }
 
         size = 1024;

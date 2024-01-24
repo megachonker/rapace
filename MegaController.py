@@ -4,9 +4,14 @@ from switch_classes.repeater import Repeater
 from switch_classes.router import Router
 from switch_classes.loadbalancer import LoadBalancer
 from switch_classes.firewall import Firewall,Flow
+from switch_classes.voidswitch import VoidSwitch
 from p4utils.utils.helper import load_topo
 
 from LogicTopo import LogicTopo
+
+
+
+avalaible_role = ["Repeater", "Firewall","Router","LoadBalancer","Nothing"]
 
 
 
@@ -163,6 +168,83 @@ class MegaController:
         self.newtopo_router()
         
         return f"Link remove succefully"
+    
+    
+    def swap(self, node : str, role : str, connect : list, arg = {} ):
+        if not self.logic_topo.isSwitch(node):
+            return f"{node} is not a physical switch" 
+        
+
+            
+        
+        switch = self.switchs[node]
+        def map_name(node_info):
+                return node_info.name
+        neig_name = map(map_name,switch.connect)
+        
+        need_remove_link = []
+        
+        for new_neig in connect : 
+            
+            if new_neig not in neig_name:
+                if self.logic_topo.isSwitch(new_neig) :
+                    if not self.switchs[new_neig].can_remove_link(node):
+                        return f"Can not remove this link {new_neig}-{node}. Please first add a another link for {new_neig}"
+                    need_remove_link.append(new_neig)
+
+                
+                
+        if role == "Nothing": 
+            switch.clear_table()
+            self.switchs[node] = VoidSwitch(node,"")
+        elif role == "Repeater":
+            if len(connect) <2:
+                return f"Need to pass peer1 and peer2 in argument"
+            peer1 = connect[0]
+            peer2 = connect[1]
+
+            self.switchs[node] = Repeater(node,peer1,peer2,self.logic_topo)
+            
+        elif role == "Firewall" :
+
+            if len(connect) <2:
+                return f"Need to pass peer1 and peer2 in argument"
+            peer1 = connect[0]
+            peer2 = connect[1]
+
+            if peer1 is None or peer2 is None:
+                return f"Need to pass peer1 and peer2 in argument"
+
+            self.switchs[node] = Firewall(node,peer1,peer2,self.logic_topo)
+        
+        elif role == "LoadBalancer":
+            if len(connect) <2:
+                return f"Need to pass one in link and a least one out port"
+            
+            in_ = connect[0]
+            out = connect[1::]
+            self.switchs[node] = LoadBalancer(node,in_,out,self.logic_topo)
+        
+        elif role == "Router":
+            self.switchs[node] = Router(node,connect,self.logic_topo)
+
+        else : 
+            return f"{role} is not a available role please take one of this role : {avalaible_role}"
+        
+        
+        
+        for new_neig in need_remove_link:
+            self.switchs[new_neig].remove_link(node)
+            
+        
+               
+                
+                
+        
+
+         
+        
+        
         
         
         
@@ -180,8 +262,8 @@ if __name__ == '__main__':
     else:
         mg = MegaController()
 
-    input("remove link2")
-    print(mg.remove_link(('s3','s1')))
+    input("swap repeater")
+    print(mg.swap("s2","Firewall",["s1","h2"]))
     
 
     
