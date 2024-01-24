@@ -63,22 +63,28 @@ class MyService(api_pb2_grpc.MyServiceServicer):
     
     @grpc_error_handler
     def show_topo(self, request, context):
-        return api_pb2.Json("non implémenter doit envoyer la topo en json degeux")
+        return api_pb2.Json(mon_json="non implémenter doit envoyer la topo en json degeux")
 
     @grpc_error_handler
     def add_link(self, request, context):
-        return api_pb2.ChangeLinkResponce(f"add_link unimplementer {request.nodeA} et {request.nodeB}")
+        mega_controller.add_link(request.nodeA,request.nodeB)
+        return api_pb2.ChangeLinkResponce(status=f"add_link {request.nodeA} et {request.nodeB}")
     
     @grpc_error_handler
     def remove_Link(self, request, context):
-        return api_pb2.ChangeLinkResponce(f"rm_link unimplementer {request.nodeA} et {request.nodeB}")
+        mega_controller.remove_link(request.nodeA,request.nodeB)
+        return api_pb2.ChangeLinkResponce(status=f"rm_link {request.nodeA} et {request.nodeB}")
+    
     @grpc_error_handler
     def swap_controler(self, request, context):
-        return api_pb2.ChangeLinkResponce(f"mega_controller.change_weight() {request.lien} et {request.weight}")
+        print(f"Swap request {request}")
+        rep = str(mega_controller.swap(node=request.target.node,role=request.mode,connect=request.argument ))
+        print(f"result of swap {rep}")
+        return api_pb2.SwapResponse(status=f"swap {rep}")
 
     @grpc_error_handler
     def change_weight(self, request, context):
-        return api_pb2.ChangeLinkResponce(f"mega_controller.change_weight() {request.lien} et {request.weight}")
+        return api_pb2.ChangeLinkResponce(status=f"mega_controller.change_weight() {request.lien} et {request.weight}")
         
     
 

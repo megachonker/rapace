@@ -10,3 +10,4 @@ class VoidSwitch(P4switch):
         self.role = "void"
         self.connect =[]
         self.name = name
+        return "VOID switch started"

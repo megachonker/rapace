@@ -120,7 +120,8 @@ class MegaController:
             if switch.role == "Router":
                 switch.newtopo_recalculate(self.logic_topo)
     
-    def add_link(self,link : (str,str),attribute=('','')):
+    def add_link(self,linkA : str, linkB:str,attribute=('','')):
+        link = (linkA,linkB)#Merci encore
         """ Add link to the topo and updtae the switch. 
             Attributes is for example in for a loadbalancer"""
         if self.logic_topo.are_neighbors(link[0],link[1]):
@@ -146,7 +147,9 @@ class MegaController:
         
         return reponses
         
-    def remove_link(self, link : (str,str)):
+    def remove_link(self, linkA : str, linkB:str):
+        link = (linkA,linkB)#Merci encore
+
         if not self.logic_topo.are_neighbors(link[0],link[1]):
             return f"There is any link between {link[0]} and {link[1]}"
         isswitch0 = self.logic_topo.isSwitch(link[0])
@@ -195,6 +198,7 @@ class MegaController:
                 
                 
         if role == "Nothing": 
+            print("swap to nothing")
             switch.clear_table()
             self.switchs[node] = VoidSwitch(node,"")
         elif role == "Repeater":
@@ -226,6 +230,7 @@ class MegaController:
             self.switchs[node] = LoadBalancer(node,in_,out,self.logic_topo)
         
         elif role == "Router":
+            print("swap to a router")
             self.switchs[node] = Router(node,connect,self.logic_topo)
 
         else : 
@@ -236,8 +241,8 @@ class MegaController:
         for new_neig in need_remove_link:
             self.switchs[new_neig].remove_link(node)
             
-        
-               
+        print("return msg a swap success")
+        return "swap success"   
                 
                 
         
@@ -264,6 +269,7 @@ if __name__ == '__main__':
 
     input("swap repeater")
     print(mg.swap("s2","Firewall",["s1","h2"]))
+    # print(mg.swap("s2","Nothing",["s1"]))
     
 
     
