@@ -1,5 +1,8 @@
 if [ -z "$1" ]
   then
+    #link the proto to the rs project
+    ln api.proto client/protofile/
+
     apt update
     apt install python3.7-venv virtualenv cargo -y
 
@@ -13,4 +16,4 @@ fi
 source venv/bin/activate
 python -m grpc_tools.protoc -I . --python_out=.  --grpc_python_out=. api.proto
 protoc --python_out=. api.proto 
-echo "protobuf compiled"
+echo "python protobuf compiled"
