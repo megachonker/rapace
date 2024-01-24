@@ -11,7 +11,17 @@ service MyService {
   rpc show_topo(Empty) returns (Json); // a remplacer par de node truc clean
   rpc add_link(Link) returns (ChangeLinkResponce);
   rpc remove_Link(Link) returns(ChangeLinkResponce);
+  rpc swap_controler(SwapRequest) returns (SwapResponse);
   rpc change_weight(ChangeWeightRequest) returns (ChangeLinkResponce);
+}
+message SwapResponse{
+  string status = 1;
+}
+
+message SwapRequest{
+  Node target = 1;
+  string mode = 2;
+  repeated string argument = 3 ;
 }
 
 message ChangeLinkResponce{

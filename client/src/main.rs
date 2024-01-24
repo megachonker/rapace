@@ -1,7 +1,7 @@
 use api::{
-    my_service_client::MyServiceClient, AddFirewallRuleRequest, Node, RateRequest, SetEncapRequest,Link,ChangeWeightRequest
+    my_service_client::MyServiceClient, AddFirewallRuleRequest, ChangeWeightRequest, Link, Node,
+    RateRequest, SetEncapRequest, SwapRequest,
 };
-use clap::Parser;
 use std::env;
 use tonic::{transport::Channel, Request};
 pub mod api {
@@ -29,6 +29,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut client = MyServiceClient::new(channel);
 
     match action {
+        // "list" => {
+        //     let rep = client.list_node(Request::new(api::Empty {})).await?;
+        //     println!("list response: {:?}", rep.into_inner().nodes);
+        // }
+
         "stat" => {
             let rep = client.get_stat(Request::new(node)).await?;
             println!("Stat response: {:?}", rep.into_inner().stat_info);
@@ -69,7 +74,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     nodedst: args[4].clone(),
                 }))
                 .await?;
-            println!("rate response: {:?}", rep.into_inner().answer);
+            println!("encap response: {:?}", rep.into_inner().answer);
         }
 
         "weight" => {
@@ -82,24 +87,39 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     weight: args[4].parse().unwrap(),
                 }))
                 .await?;
-            println!("rate response: {:?}", rep.into_inner().status);
+            println!("weight response: {:?}", rep.into_inner().status);
         }
 
         "add" => {
-            let rep = client.add_link(Request::new(Link { node_a: node.node, node_b: args[3].clone() })).await?;
-            println!("rate response: {:?}", rep.into_inner().status);
+            let rep = client
+                .add_link(Request::new(Link {
+                    node_a: node.node,
+                    node_b: args[3].clone(),
+                }))
+                .await?;
+            println!("add response: {:?}", rep.into_inner().status);
         }
 
-        // "remove" => {
-        //     let rep = client.delet_link(Request::new(Link { node_a: node.node, node_b: args[3].clone() })).await?;
-        //     println!("rate response: {:?}", rep.into_inner().status);
-        // }
-        // //swap
+        "remove" => {
+            let rep = client
+                .remove_link(Request::new(Link {
+                    node_a: node.node,
+                    node_b: args[3].clone(),
+                }))
+                .await?;
+            println!("remove response: {:?}", rep.into_inner().status);
+        }
 
-        // "swap" => {
-        //     let rep = client.delet_link(Request::new(Link { node_a: node.node, node_b: args[3].clone() })).await?;
-        //     println!("rate response: {:?}", rep.into_inner().status);
-        // }
+        "swap" => {
+            let rep = client
+                .swap_controler(Request::new(SwapRequest {
+                    target: Some(node),
+                    mode: args[3].clone(),
+                    argument: args[4..].to_vec(),
+                }))
+                .await?;
+            println!("swap response: {:?}", rep.into_inner().status);
+        }
 
         // Ajoutez les autres cas d'action ici, en suivant le même schéma.
         _ => {

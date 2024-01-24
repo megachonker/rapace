@@ -6,7 +6,7 @@ if [ -z "$1" ]
     apt update
     apt install python3.7-venv virtualenv cargo -y
 
-    runuser p4 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    runuser -u p4 "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
 
     virtualenv venv --python=python3.7
     source venv/bin/activate
