@@ -6,7 +6,12 @@ from switch_classes.firewall import Flow
 
 from MegaController import MegaController
 
-mega_controller = MegaController()
+
+import sys 
+if len(sys.argv) >1:
+    mega_controller = MegaController(conf_path=sys.argv[1])
+else:
+    mega_controller = MegaController()
 
 import functools
 import logging

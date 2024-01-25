@@ -1,0 +1,38 @@
+
+# DO not modify, create another one if you want
+# ***REMOVED***
+# It is the conf of the subjects
+
+switchs:
+  - name: s1
+    role: Firewall
+    connect: [h1, s2]
+    
+  - name: s2
+    role: LoadBalancer
+    connect : [s1,s3,s4]
+    in : s1
+  
+  - name: s3
+    role: Router
+    connect: [s2,s4,s5,s6]
+
+  - name: s4
+    role: Router
+    connect: [s2, s3, s5,s7]
+
+  - name: s5
+    role: Router
+    connect: [s3, s4,s6,s7]
+
+  - name: s6
+    role: Router
+    connect: [s3, s5, s7,s8]
+
+  - name: s7
+    role: Router
+    connect: [s4, s5, s6,s8]
+
+  - name: s8
+    role: Router
+    connect: [h8, s6, s7]

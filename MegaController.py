@@ -144,7 +144,7 @@ class MegaController:
         self.logic_topo.add_link(link[0],link[1])
         
         self.newtopo_router()
-        
+        self.save_topo()
         return reponses
         
     def remove_link(self, linkA : str, linkB:str):
@@ -170,6 +170,7 @@ class MegaController:
         
         self.newtopo_router()
         
+        self.save_topo()
         return f"Link remove succefully"
     
     
@@ -179,21 +180,24 @@ class MegaController:
         
 
             
-        
-        switch = self.switchs[node]
-        def map_name(node_info):
-                return node_info.name
-        neig_name = map(map_name,switch.connect)
+        print("qsdhsqdh")
+        switch = self.switchs.get(node)
         
         need_remove_link = []
+        if switch is not None:
+            def map_name(node_info):
+                    return node_info.name
+            neig_name = map(map_name,switch.connect)
         
-        for new_neig in connect : 
-            
-            if new_neig not in neig_name:
-                if self.logic_topo.isSwitch(new_neig) :
-                    if not self.switchs[new_neig].can_remove_link(node):
-                        return f"Can not remove this link {new_neig}-{node}. Please first add a another link for {new_neig}"
-                    need_remove_link.append(new_neig)
+            for new_neig in neig_name : 
+
+
+
+                if new_neig not in connect:
+                    if self.logic_topo.isSwitch(new_neig) :
+                        if not self.switchs[new_neig].can_remove_link(node):
+                            return f"Can not remove this link {new_neig}-{node}. Please first add a another link for {new_neig}"
+                        need_remove_link.append(new_neig)
 
                 
                 
@@ -223,7 +227,7 @@ class MegaController:
         
         elif role == "LoadBalancer":
             if len(connect) <2:
-                return f"Need to pass one in link and a least one out port"
+                return f"Need to pass one in neighboor and a least one out neighboor"
             
             in_ = connect[0]
             out = connect[1::]
@@ -240,7 +244,8 @@ class MegaController:
         
         for new_neig in need_remove_link:
             self.switchs[new_neig].remove_link(node)
-            
+        
+        self.save_topo()
         print("return msg a swap success")
         return "swap success"   
                 
@@ -268,8 +273,8 @@ if __name__ == '__main__':
         mg = MegaController()
 
     input("swap repeater")
-    print(mg.swap("s2","Firewall",["s1","h2"]))
-    # print(mg.swap("s2","Nothing",["s1"]))
+    # print(mg.swap("s2","Firewall",["s1","h2"]))
+    print(mg.swap("s2","Nothing",[]))
     
 
     

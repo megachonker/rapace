@@ -9,7 +9,7 @@ def stop():
     net.net.stop()
 
 
-def main(Cli=True,nb_switch=7):
+def main(Cli=True,nb_switch=10):
     """ Start the physical network, it is a clique of 8 switchs with one host per switchs
         l2 strategy 
         Cli=True to have a Cli (!!! does not return in this case) """
@@ -36,7 +36,7 @@ def main(Cli=True,nb_switch=7):
 
 
     # Assignment strategy
-    net.l2()
+    net.l3()
 
     # Nodes general options
     net.enablePcapDumpAll()
