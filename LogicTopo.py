@@ -68,7 +68,6 @@ class LogicTopo(NetworkGraph):
     def add_link(self,node1:str,node2:str):
         """ Add a logic link, use the physical link """
         physic_edge = self.shearch_edges(node1,node2)
-        print(node1,node2)
 
         physic_edge = (physic_edge[0][0], physic_edge[0][1],physic_edge[1])   #Python ...
         self.add_edges_from([physic_edge])

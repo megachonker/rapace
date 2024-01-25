@@ -1,11 +1,15 @@
 switchs:
   - name: s1
-    role: Repeater
+    role: Router
     connect: [h1, s2]
     
   - name: s2
     role: Router
-    connect : [s1,h2]
+    connect : [s1,h2,s3]
+
+  - name: s3
+    role: Router
+    connect : [s2,h3]
   
 
 
