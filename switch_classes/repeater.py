@@ -28,8 +28,8 @@ class Repeater(P4switch):
     def init_table(self):
         self.clear_table()
         
-        self.api.table_add("repeater","forward",[str(self.connect[0].port)],[str(self.connect[1].port)])
-        self.api.table_add("repeater","forward",[str(self.connect[1].port)],[str(self.connect[0].port)])
+        self.api.table_add("repeater","forward",[str(self.connect[0].port)],[str(self.connect[1].mac),str(self.connect[1].port)])
+        self.api.table_add("repeater","forward",[str(self.connect[1].port)],[str(self.connect[0].mac),str(self.connect[0].port)])
 
     # controler function
     def stat(self):

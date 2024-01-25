@@ -31,8 +31,12 @@ control MyIngress(inout headers hdr,
     direct_counter(CounterType.packets) filter_hit;
     counter(1, CounterType.packets_and_bytes) total_packet;
 
-    action forward(bit<9> egress_port){
-        standard_metadata.egress_spec = egress_port;
+    action forward(macAddr_t dstAddr, egressSpec_t port) {
+        hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
+
+        hdr.ethernet.dstAddr = dstAddr;
+
+        standard_metadata.egress_spec = port;
     }
 
     action drop() {

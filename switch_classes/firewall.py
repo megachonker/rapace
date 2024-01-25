@@ -32,8 +32,8 @@ class Firewall(P4switch):
         self.clear_table()
 
     
-        self.api.table_add("route","forward",[str(self.connect[0].port)],[str(self.connect[1].port)])
-        self.api.table_add("route","forward",[str(self.connect[1].port)],[str(self.connect[0].port)])
+        self.api.table_add("route","forward",[str(self.connect[0].port)],[str(self.connect[1].mac),str(self.connect[1].port)])
+        self.api.table_add("route","forward",[str(self.connect[1].port)],[str(self.connect[0].mac),str(self.connect[0].port)])
 
     # controler function --> put in P4switchs No ? 
     def stat(self):

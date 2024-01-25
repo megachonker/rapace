@@ -2,14 +2,24 @@
 #include <core.p4>
 #include <v1model.p4>
 
+typedef bit<9>  egressSpec_t;
+typedef bit<48> macAddr_t;
+typedef bit<32> ip4Addr_t;
+
 /*************************************************************************
 *********************** H E A D E R S  ***********************************
 *************************************************************************/
-
-struct metadata {
+header ethernet_t {
+    macAddr_t dstAddr;
+    macAddr_t srcAddr;
+    bit<16>   etherType;
 }
 
 struct headers {
+    ethernet_t   ethernet;
+}
+struct metadata{
+
 }
 
 /*************************************************************************
@@ -22,10 +32,15 @@ parser MyParser(packet_in packet,
                 inout standard_metadata_t standard_metadata) {
 
       state start{
-          transition accept;
-      }
-}
+          transition parse_ethernet;
+    }
 
+    state parse_ethernet {
+
+        packet.extract(hdr.ethernet);
+        transition accept;
+    }
+}
 /*************************************************************************
 ************   C H E C K S U M    V E R I F I C A T I O N   *************
 *************************************************************************/
@@ -44,8 +59,13 @@ control MyIngress(inout headers hdr,
                   inout standard_metadata_t standard_metadata) {
     counter(1, CounterType.packets_and_bytes) total_packet;
 
-    action forward(bit<9> egress_port){
-        standard_metadata.egress_spec = egress_port;
+    action forward(macAddr_t dstAddr, egressSpec_t port) {
+        hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
+
+        hdr.ethernet.dstAddr = dstAddr;
+
+        standard_metadata.egress_spec = port;
+
     }
 
     action drop() {
@@ -96,7 +116,7 @@ control MyComputeChecksum(inout headers  hdr, inout metadata meta) {
 control MyDeparser(packet_out packet, in headers hdr) {
     apply {
 
-    /* Deparser not needed */
+        packet.emit(hdr.ethernet);        
 
     }
 }
