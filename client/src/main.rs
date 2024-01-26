@@ -2,14 +2,18 @@ use api::{
     my_service_client::MyServiceClient, AddFirewallRuleRequest, ChangeWeightRequest, Link, Node,
     RateRequest, SetEncapRequest, SwapRequest,
 };
+use view_graph::evacuate;
 use std::env;
 use tonic::{transport::Channel, Request};
+use std::fs;
 pub mod api {
     tonic::include_proto!("myservice");
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+
+
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 3 {
@@ -121,6 +125,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("swap response: {:?}", rep.into_inner().status);
         }
 
+        "show" => {
+            let data = fs::read_to_string("../logic_topology.json").expect("failed load the file");
+            evacuate(data);
+        }
         // Ajoutez les autres cas d'action ici, en suivant le même schéma.
         _ => {
             println!("Unknown action: {}", action);

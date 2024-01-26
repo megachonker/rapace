@@ -213,8 +213,8 @@ impl GraphPort {
     }
 }
 
-fn main() {
-    let data = fs::read_to_string("./graph.json").expect("failed load the file");
+pub fn evacuate(data:String) {
+    // let data = fs::read_to_string("./graph.json").expect("failed load the file");
     let parsed: Graphformat = serde_json::from_str(&data).expect("failed to parse the json");
 
     let mut node_list_org = vec![];
