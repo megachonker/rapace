@@ -4,7 +4,8 @@ if [ -z "$1" ]
     ln api.proto client/protofile/
 
     apt update
-    apt install python3.7-venv virtualenv cargo -y
+    apt install python3.7-venv virtualenv sudo apt install graphviz -y
+    # todo install and XDG-OPEN
 
     runuser -u p4 "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
 
