@@ -76,13 +76,13 @@ class MyService(api_pb2_grpc.MyServiceServicer):
 
     @grpc_error_handler
     def add_link(self, request, context):
-        mega_controller.add_link(request.nodeA,request.nodeB)
-        return api_pb2.ChangeLinkResponce(status=f"add_link {request.nodeA} et {request.nodeB}")
+        rep=mega_controller.add_link(request.nodeA,request.nodeB)
+        return api_pb2.ChangeLinkResponce(status=f"add_link {request.nodeA} et {request.nodeB} => {rep}")
     
     @grpc_error_handler
     def remove_Link(self, request, context):
-        mega_controller.remove_link(request.nodeA,request.nodeB)
-        return api_pb2.ChangeLinkResponce(status=f"rm_link {request.nodeA} et {request.nodeB}")
+        rep=mega_controller.remove_link(request.nodeA,request.nodeB)
+        return api_pb2.ChangeLinkResponce(status=f"rm_link {request.nodeA} et {request.nodeB} => {rep}")
     
     @grpc_error_handler
     def swap_controler(self, request, context):
