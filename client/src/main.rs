@@ -56,9 +56,23 @@ fn print_help() {
 async fn action_match(
     action: &str,
     client: &mut MyServiceClient<Channel>,
-    node: Node,
-    args: &Vec<String>,
+    args: &mut Vec<String>,
 ) -> Result<(), Box<dyn std::error::Error>> {
+    let node = if args.len() > 1 {
+        Node {
+            node: String::from(args.get(1).unwrap_or(&"".to_string()).clone()),
+        }
+    } else {
+        Node {
+            node: String::from(""),
+        }
+    };
+
+    // for _ in 0..4 {
+    //     args.push("".into());
+    // }
+    
+
     match action {
         "stat" => {
             let rep = client.get_stat(Request::new(node)).await?;
@@ -73,11 +87,11 @@ async fn action_match(
             // if number of arg not match return helper for fw
             let reqest = AddFirewallRuleRequest {
                 node: node.node,
-                source_ip: args[3].clone(),
-                dest_ip: args[4].clone(),
-                protocol: args[5].clone(),
-                source_port: args[6].parse().unwrap(),
-                dest_port: args[7].parse().unwrap(),
+                source_ip: args.get(2).unwrap_or(&"".to_string()).clone(),
+                dest_ip: args.get(3).unwrap_or(&"".to_string()).clone(),
+                protocol: args.get(5).unwrap_or(&"".to_string()).clone(),
+                source_port: args.get(6).unwrap_or(&"".to_string()).parse().unwrap(),
+                dest_port: args.get(7).unwrap_or(&"".to_string()).parse().unwrap(),
             };
             let rep = client.add_firewall_rule(Request::new(reqest)).await?;
             println!("fw response: {:?}", rep.into_inner().message);
@@ -86,7 +100,7 @@ async fn action_match(
             let rep = client
                 .change_rate(Request::new(RateRequest {
                     node: node.node,
-                    rate: args[3].parse().unwrap(),
+                    rate: args.get(2).unwrap_or(&"".to_string()).parse().unwrap(),
                 }))
                 .await?;
             println!("rate response: {:?}", rep.into_inner().result);
@@ -106,8 +120,8 @@ async fn action_match(
                 rep = client
                 .set_encap(Request::new(SetEncapRequest {
                     node: node.node,
-                    ip_address: args[3].parse().unwrap(),
-                    nodedst: args[4].clone(),
+                    ip_address: args.get(2).unwrap_or(&"".to_string()).parse().unwrap(),
+                    nodedst: args.get(3).unwrap_or(&"".to_string()).clone(),
                 }))
                 .await?;
             }
@@ -119,10 +133,10 @@ async fn action_match(
             let rep = client
                 .change_weight(Request::new(ChangeWeightRequest {
                     lien: Some(Link {
-                        node_a: args[2].clone(),
-                        node_b: args[3].clone(),
+                        node_a: args.get(2).unwrap_or(&"".to_string()).clone(),
+                        node_b: args.get(2).unwrap_or(&"".to_string()).clone(),
                     }),
-                    weight: args[4].parse().unwrap(),
+                    weight: args.get(3).unwrap_or(&"".to_string()).parse().unwrap(),
                 }))
                 .await?;
             println!("weight response: {:?}", rep.into_inner().status);
@@ -132,31 +146,35 @@ async fn action_match(
             let rep = client
                 .add_link(Request::new(Link {
                     node_a: node.node,
-                    node_b: args[3].clone(),
+                    node_b: args.get(2).unwrap_or(&"".to_string()).clone(),
                 }))
                 .await?;
-            println!("add response: {:?}", rep.into_inner().status);
+            println!("{:?}", rep.into_inner().status);
         }
 
         "remove" => {
             let rep = client
                 .remove_link(Request::new(Link {
                     node_a: node.node,
-                    node_b: args[3].clone(),
+                    node_b: args.get(2).unwrap_or(&"".to_string()).clone(),
                 }))
                 .await?;
-            println!("remove response: {:?}", rep.into_inner().status);
+            println!("{:?}", rep.into_inner().status);
         }
 
         "swap" => {
+            let mut arg = vec![];
+            if args.len()>3{
+                arg = args[3..].to_vec();
+            }
             let rep = client
                 .swap_controler(Request::new(SwapRequest {
                     target: Some(node),
-                    mode: args[3].clone(),
-                    argument: args[4..].to_vec(),
+                    mode: args.get(2).unwrap_or(&"".to_string()).clone(),
+                    argument: arg,
                 }))
                 .await?;
-            println!("swap response: {:?}", rep.into_inner().status);
+            println!("Sucess of swap");
         }
 
         "show" => {
@@ -169,9 +187,7 @@ async fn action_match(
                 .unwrap();
         }
 
-        "help" =>{
-            print_help() 
-        }
+        "help" => print_help(),
         _ => {
             println!("Unknown action: {}", action);
         }
@@ -188,9 +204,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     //     return Ok(());
     // }
 
-    // let action = (&args[1]).as_str();
+    // let action = (&args.get(1).unwrap_or(&"".to_string())).as_str();
     // let node = Node {
-    //     node: (&args[2]).clone(),
+    //     node: (&args.get(2).unwrap_or(&"".to_string())).clone(),
     // };
 
     let channel = Channel::from_static("http://localhost:50051")
@@ -208,36 +224,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
         let command = command.unwrap();
         let command = command.split(" ").collect::<Vec<&str>>();
-        if command.len() == 0 || command[0] == ""{
+        if command.len() == 0 || command[0] == "" {
             continue;
         }
-        let node = if command.len() >1{
 
-            Node {
-                node: String::from(command[1])}
-            
-        }
-        else{
-            Node {
-                node: String::from("")
-            }
-        };
-        let mut args : Vec<String> = vec![];
-        if command.len() > 2{
-            args = command[2..]
-                .to_vec()
+        let mut args: Vec<String> = vec![];
+        if command.len() > 2 {
+            args = command
                 .iter()
                 .map(|&s| String::from(s))
                 .collect::<Vec<String>>()
         }
-        
-        action_match(
-            command[0],
-            &mut client,
-            node,
-            &args,
-        )
-        .await?;
+
+        match action_match(command[0], &mut client, &mut args).await {
+            Ok(_) => {}
+            Err(err) => {
+                println!("{err}");
+            }
+        }
     }
     Ok(())
 }
