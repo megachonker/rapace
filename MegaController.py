@@ -207,7 +207,6 @@ class MegaController:
             for new_neig in neig_name : 
 
 
-
                 if new_neig not in connect:
                     if self.logic_topo.isSwitch(new_neig) :
                         if not self.switchs[new_neig].can_remove_link(node):
