@@ -39,14 +39,29 @@ class MegaController:
 
 
 
-
         self.switchs =  {}
-        # Parcourir les éléments du fichier YAML pour créer des instances de Repeater
         for switch in data['switchs']:
-            """ Iter a first time because P4switchs need a complete topology to start (especially router) """
+            #Iter a first time because P4switchs need a complete topology to start (especially router) 
             name = switch['name']
             role = switch['role']
             connections = switch['connect']   
+            for neig in connections:
+                #Check if there is a physic connection:
+                if not physic_topo.has_edge(name,neig):
+                    print(f"{neig} and {name} can not be linked")
+                    raise Exception("Logic link not suported on physical topology")
+                
+                
+                #Check if the
+                if neig[0]=='h':
+                    continue
+                for sw in data['switchs']:
+                    if sw['name'] == neig:
+                        neig =sw 
+                        break
+                if name not in neig['connect']:
+                    print(f"{name} need to be in connect list of {neig['name']}")
+                    raise Exception("yaml is not consitent ") 
             self.logic_topo.switch_info(name,role,connections)
 
 

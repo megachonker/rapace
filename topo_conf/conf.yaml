@@ -10,7 +10,7 @@ switchs:
     
   - name: s2
     role: Router
-    connect : [s1,h2]
+    connect : [h2,s1]
 
 
   
