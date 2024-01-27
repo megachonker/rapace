@@ -43,7 +43,7 @@ fn print_help() {
     println!("  reset <node>                                           - Reset the node");
     println!("  fw <node> <args>                                       - Add firewall rule");
     println!("  rate <node> <pkt/s>                                    - Change rate of the loadbalancer ");
-    println!("  encap <node> <args>                                    - Set encapsulation");
+    println!("  encap <node> <ip> <end> [neigh]                        - Set encapsulation (if neigh is mentionned is for link bridge )");
     println!("  weight <node1> <node2> <new_weight>                    - Change weight of link node1-node2");
     println!("  add <node1> <node2>                                    - Add link node1-node2");
     println!("  remove <node1> <node2>                                 - Remove link node1-node2 (if it possible)");
@@ -109,12 +109,12 @@ async fn action_match(
 
         "encap" => {
             let rep;
-            if args.len() == 6{
+            if args.len() == 5{
                 rep =client.set_encap_link(Request::new(SetEncapLinkRequest {
                     node: node.node,
-                    ip_address: args[3].parse().unwrap(),
-                    nodedst_a: args[4].clone(),
-                    nodedst_b: args[5].clone(),
+                    ip_address: args[2].parse().unwrap(),
+                    nodedst_a: args[3].clone(),
+                    nodedst_b: args[4].clone(),
                 }))
                 .await?;
             }else{

@@ -212,6 +212,7 @@ class MegaController:
                         if not self.switchs[new_neig].can_remove_link(node):
                             return f"Can not remove this link {new_neig}-{node}. Please first add a another link for {new_neig}"
                         need_remove_link.append(new_neig)
+                    
 
                 
                 
@@ -261,6 +262,8 @@ class MegaController:
             
         self.logic_topo.switch_info(node,role,connect)
         self.save_topo()
+        
+        self.newtopo_router()
         print("return msg a swap success")
         return "swap success"   
                 

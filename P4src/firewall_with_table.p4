@@ -84,6 +84,9 @@ control MyIngress(inout headers hdr,
         if  (! rule.apply().hit){
             route.apply();
         }
+        if (hdr.ipv4.ttl == 0){
+            mark_to_drop(standard_metadata);
+        }
     }
 }
 

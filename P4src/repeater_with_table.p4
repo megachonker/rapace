@@ -88,6 +88,9 @@ control MyIngress(inout headers hdr,
     apply {
         total_packet.count((bit<32>)0);
         repeater.apply();
+        if (hdr.ipv4.ttl == 0){
+            mark_to_drop(standard_metadata);
+        }
     }
 }
 

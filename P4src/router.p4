@@ -69,21 +69,25 @@ control MyIngress(inout headers_stacked hdr,
     counter(1, CounterType.packets_and_bytes) total_packet;
     bool already_forwarded = false;
     bool encaped = false;
+
+    
+    action drop() {
+        mark_to_drop(standard_metadata);
+    }
     
     action forward(macAddr_t dstAddr, egressSpec_t port) {
         hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
         hdr.ethernet.dstAddr = dstAddr;
         standard_metadata.egress_spec = port;
         hdr.ipv4[0].ttl = hdr.ipv4[0].ttl - 1;
+        
     }
 
     action pass(){
         //do nothing
     }
 
-    action drop() {
-        mark_to_drop(standard_metadata);
-    }
+    
 
     action decap(){
         //check un champ ip pour le port dst
@@ -151,6 +155,10 @@ control MyIngress(inout headers_stacked hdr,
         }
         if(!already_forwarded){
             ipv4_lpm.apply();
+        }
+
+        if (hdr.ipv4[0].ttl == 0){
+            mark_to_drop(standard_metadata);
         }
     }
 }
