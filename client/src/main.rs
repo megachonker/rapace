@@ -11,26 +11,12 @@ pub mod api {
 }
 use std::process::Command;
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let args: Vec<String> = env::args().collect();
-
-    if args.len() < 3 {
-        println!("Usage:./client <action> <node> [additional_args]");
-        return Ok(());
-    }
-
-    let action = (&args[1]).as_str();
-    let node = Node {
-        node: (&args[2]).clone(),
-    };
-
-    let channel = Channel::from_static("http://localhost:50051")
-        .connect()
-        .await?;
-
-    let mut client = MyServiceClient::new(channel);
-
+async fn action_match(
+    action: &str,
+    client:&  MyServiceClient<Channel>,
+    node: Node,
+    args: Vec<String>,
+) -> Result<(),Box<dyn std::error::Error>>{
     match action {
         // "list" => {
         //     let rep = client.list_node(Request::new(api::Empty {})).await?;
@@ -124,18 +110,42 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
 
         "show" => {
-            let rep = client
-                .show_topo(Request::new(api::Empty {  }))
-                .await?;
-            let thejson:String = rep.into_inner().mon_json;
+            let rep = client.show_topo(Request::new(api::Empty {})).await?;
+            let thejson: String = rep.into_inner().mon_json;
             evacuate(thejson.clone());
-            Command::new("geeqie").args(["/tmp/topology.png"]).output().unwrap();
+            Command::new("geeqie")
+                .args(["/tmp/topology.png"])
+                .output()
+                .unwrap();
         }
         // Ajoutez les autres cas d'action ici, en suivant le même schéma.
         _ => {
             println!("Unknown action: {}", action);
         }
+        
+    }
+    Ok(())
+}
+
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    let args: Vec<String> = env::args().collect();
+
+    if args.len() < 3 {
+        println!("Usage:./client <action> <node> [additional_args]");
+        return Ok(());
     }
 
+    let action = (&args[1]).as_str();
+    let node = Node {
+        node: (&args[2]).clone(),
+    };
+
+    let channel = Channel::from_static("http://localhost:50051")
+        .connect()
+        .await?;
+
+    let mut client: MyServiceClient<Channel> = MyServiceClient::new(channel);
+    action_match(action, & client, node, args);
     Ok(())
 }
