@@ -66,6 +66,17 @@ control MyIngress(inout headers_stacked hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
     counter(1, CounterType.packets_and_bytes) total_packet;
+    bool already_forwarded = false;
+
+    action forward(macAddr_t dstAddr, egressSpec_t port) {
+        hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
+
+        hdr.ethernet.dstAddr = dstAddr;
+
+        standard_metadata.egress_spec = port;
+
+        hdr.ipv4[0].ttl = hdr.ipv4[0].ttl - 1;
+    }
 
     action pass(){
         //do nothing
@@ -76,7 +87,15 @@ control MyIngress(inout headers_stacked hdr,
     }
 
     action decap(){
-        // hdr.ipv4[1].setInvalid();
+        //check un champ ip pour le port dst
+        
+        //we use the frag number to store forward port
+        egressSpec_t port = (bit<9>)hdr.ipv4[0].identification;
+        if(port != 0){
+            forward(0xfffffffffff,port);
+            already_forwarded = true;
+        }
+
         hdr.ipv4.pop_front(1);
     }
 
@@ -90,17 +109,11 @@ control MyIngress(inout headers_stacked hdr,
         hdr.ipv4[0].protocol=TYPE_ENCAP;
     }
 
-
-    action forward(macAddr_t dstAddr, egressSpec_t port) {
-        log_msg("Salut {}",{dstAddr});
-        hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
-
-        hdr.ethernet.dstAddr = dstAddr;
-
-        standard_metadata.egress_spec = port;
-
-        hdr.ipv4[0].ttl = hdr.ipv4[0].ttl - 1;
+    action encap_link(ip4Addr_t source,ip4Addr_t destination,egressSpec_t port){
+        encap(source,destination);
+        hdr.ipv4[0].identification=(bit<16>)port;
     }
+
 
     table encap_table{
         key = {
@@ -109,6 +122,7 @@ control MyIngress(inout headers_stacked hdr,
         actions = {
             decap;
             encap;
+            encap_link;
             pass;
         }
         size = 1024;
@@ -132,7 +146,9 @@ control MyIngress(inout headers_stacked hdr,
     apply {
         total_packet.count((bit<32>)0);
         encap_table.apply();
-        ipv4_lpm.apply();
+        if(!already_forwarded){
+            ipv4_lpm.apply();
+        }
     }
 }
 

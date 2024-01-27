@@ -8,6 +8,7 @@ service MyService {
   rpc AddFirewallRule(AddFirewallRuleRequest) returns (AddFirewallRuleResponse);
   rpc Change_rate(RateRequest) returns (ChangeRateResponse);
   rpc set_encap(SetEncapRequest) returns (SetEncapResponce);
+  rpc set_encap_link(SetEncapLinkRequest) returns (SetEncapResponce);
   rpc show_topo(Empty) returns (Json); // a remplacer par de node truc clean
   rpc add_link(Link) returns (ChangeLinkResponce);
   rpc remove_Link(Link) returns(ChangeLinkResponce);
@@ -46,6 +47,12 @@ message SetEncapRequest{
   string nodedst=3;
 }
 
+message SetEncapLinkRequest{
+string node =1;
+string ip_address = 2;
+string nodedstA=3;
+string nodedstB=4;
+}
 message Link{
   string nodeA =1;
   string nodeB =2;

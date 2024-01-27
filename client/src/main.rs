@@ -1,6 +1,6 @@
 use api::{
     my_service_client::MyServiceClient, AddFirewallRuleRequest, ChangeWeightRequest, Link, Node,
-    RateRequest, SetEncapRequest, SwapRequest,
+    RateRequest, SetEncapRequest, SwapRequest,SetEncapLinkRequest
 };
 use std::env;
 use std::fs;
@@ -15,7 +15,7 @@ use std::process::Command;
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
 
-    if args.len() < 3 {
+    if args.len() == 1 {
         println!("Usage:./client <action> <node> [additional_args]");
         return Ok(());
     }
@@ -69,13 +69,25 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
 
         "encap" => {
-            let rep = client
+            let rep;
+            if args.len() == 6{
+                rep =client.set_encap_link(Request::new(SetEncapLinkRequest {
+                    node: node.node,
+                    ip_address: args[3].parse().unwrap(),
+                    nodedst_a: args[4].clone(),
+                    nodedst_b: args[5].clone(),
+                }))
+                .await?;
+            }else{
+                rep = client
                 .set_encap(Request::new(SetEncapRequest {
                     node: node.node,
                     ip_address: args[3].parse().unwrap(),
                     nodedst: args[4].clone(),
                 }))
                 .await?;
+            }
+
             println!("encap response: {:?}", rep.into_inner().answer);
         }
 

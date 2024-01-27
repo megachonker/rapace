@@ -63,9 +63,13 @@ class MyService(api_pb2_grpc.MyServiceServicer):
    
     @grpc_error_handler
     def set_encap(self, request, context):
-        print("non implémenter")
         return api_pb2.SetEncapResponce(answer=str(mega_controller.switchs[request.node].add_encap(request.ip_address,request.nodedst)))
-    
+
+    @grpc_error_handler
+    def set_encap_link(self, request, context):
+        return api_pb2.SetEncapResponce(answer=str(mega_controller.switchs[request.node].add_encap_link(request.ip_address,request.nodedstA,request.nodedstB)))
+        
+
     @grpc_error_handler
     def show_topo(self, request, context):
         return api_pb2.Json(mon_json=str(mega_controller.save_topo()))
