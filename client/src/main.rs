@@ -77,19 +77,7 @@ async fn action_match(
         "stat" => {
             let rep = client.get_stat(Request::new(node)).await?;
             let rep : String = rep.into_inner().stat_info;
-
-            let rep = rep.split("(").collect::<Vec<&str>>();
-            let rep = rep.get(1).unwrap();
-            let rep = rep.replace(")","");
-            let rep = rep.split(", ").collect::<Vec<&str>>();
-
-            let rep1: u64 = rep[0].parse().unwrap();
-            let rep2: u64 = rep[1].parse().unwrap();
-
-            println!("There was {} packet on {} ({} bytes)",rep2,args[1],rep1);
-
-
-            // println!("{:?}", rep.into_inner().stat_info);
+            println!("{rep}");
         }
         "reset" => {
             let rep = client.reset(Request::new(node)).await?;

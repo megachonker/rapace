@@ -41,11 +41,15 @@ class MyService(api_pb2_grpc.MyServiceServicer):
 
     @grpc_error_handler
     def GetStat(self, request, context):
-        return api_pb2.StatResponse(stat_info=str(mega_controller.switchs[request.node].stat()))
+        stat = mega_controller.switchs[request.node].stat()
+        if len(stat) > 1:
+            res = f"Packet received {stat[0]}\n{stat[1]}"
+        else:
+            res = f"Packet received {stat[0]}"
+        return api_pb2.StatResponse(stat_info=res)
 
     @grpc_error_handler
     def AddFirewallRule(self, request, context):
-        # print(f"fw debug {request}")
         #association table 
         translate = {
             'TCP':6,

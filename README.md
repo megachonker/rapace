@@ -16,7 +16,7 @@ To get the depot, you can download it from git
 git clone 
 ```
 
-Before starting, you need to install and compile some elements. Ensure you have Rust, Python 3.7, the gRPC API, and other dependencies installed. To simplify this process, run the grpc_build_install_dep.bash` script with sudo permission.
+Before starting, you need to install and compile some elements. Ensure you have Rust, Python 3.7, the gRPC API, and other dependencies installed. To simplify this process, run the `sudo bash grpc_build_install_dep.bash` script with sudo permission.
 
 ## Basic Launch
 
@@ -31,14 +31,13 @@ To launch a simple network, follow these steps:
 2. Launch the logical topology with:
 
     ```bash
-    python grpc_server.py topo_conf/conf_subject.yaml
+    python grpc_server.py [topo_conf/conf_subject.yaml]
     ```
 
     At this point, the network is launched, and you can manage it using the API. To interact with it you can use the Rust client. Build and run it with:
 
     ```bash
     cd client/
-    cargo build
     cargo run
     ```
 

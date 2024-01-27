@@ -38,7 +38,7 @@ class Firewall(P4switch):
     # controler function --> put in P4switchs No ? 
     def stat(self):
         print(f"stat du switch {self.name} Firewall")    
-        return [self.api.counter_read('total_packet', 0),self.api.counter_read('filter_hit', 0)]
+        return [self.api.counter_read('total_packet', 0),f"filter hit {self.api.counter_read('filter_hit', 0)}"]
 
     def reset(self):
         print(f"reset du switch {self.name}")

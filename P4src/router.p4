@@ -65,16 +65,15 @@ control MyVerifyChecksum(inout headers_stacked hdr, inout metadata meta) {
 control MyIngress(inout headers_stacked hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
+    counter(1, CounterType.packets_and_bytes) encap_counter;
     counter(1, CounterType.packets_and_bytes) total_packet;
     bool already_forwarded = false;
-
+    bool encaped = false;
+    
     action forward(macAddr_t dstAddr, egressSpec_t port) {
         hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
-
         hdr.ethernet.dstAddr = dstAddr;
-
         standard_metadata.egress_spec = port;
-
         hdr.ipv4[0].ttl = hdr.ipv4[0].ttl - 1;
     }
 
@@ -107,6 +106,7 @@ control MyIngress(inout headers_stacked hdr,
         hdr.ipv4[0].srcAddr=source;
         hdr.ipv4[0].dstAddr=destination;
         hdr.ipv4[0].protocol=TYPE_ENCAP;
+        encaped = true;
     }
 
     action encap_link(ip4Addr_t source,ip4Addr_t destination,egressSpec_t port){
@@ -146,6 +146,9 @@ control MyIngress(inout headers_stacked hdr,
     apply {
         total_packet.count((bit<32>)0);
         encap_table.apply();
+        if(encaped){
+            encap_counter.count((bit<32>)0);
+        }
         if(!already_forwarded){
             ipv4_lpm.apply();
         }

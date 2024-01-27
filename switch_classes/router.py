@@ -91,7 +91,7 @@ class Router(P4switch):
     # controler function
     def stat(self):
         print(f"stat du switch {self.name} router")    
-        return self.api.counter_read('total_packet', 0)
+        return [self.api.counter_read('total_packet', 0),f"Encapsuled packet: {self.api.counter_read('encap_counter', 0)}"]
 
     def reset(self):
         print(f"reset du switch {self.name}")
