@@ -146,6 +146,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     let mut client: MyServiceClient<Channel> = MyServiceClient::new(channel);
-    action_match(action, &mut client, node, & args);
+    action_match(action, &mut client, node, & args).await?;
     Ok(())
 }
