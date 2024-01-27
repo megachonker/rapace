@@ -76,11 +76,24 @@ async fn action_match(
     match action {
         "stat" => {
             let rep = client.get_stat(Request::new(node)).await?;
-            println!("Stat response: {:?}", rep.into_inner().stat_info);
+            let rep : String = rep.into_inner().stat_info;
+
+            let rep = rep.split("(").collect::<Vec<&str>>();
+            let rep = rep.get(1).unwrap();
+            let rep = rep.replace(")","");
+            let rep = rep.split(", ").collect::<Vec<&str>>();
+
+            let rep1: u64 = rep[0].parse().unwrap();
+            let rep2: u64 = rep[1].parse().unwrap();
+
+            println!("There was {} packet on {} ({} bytes)",rep2,args[1],rep1);
+
+
+            // println!("{:?}", rep.into_inner().stat_info);
         }
         "reset" => {
             let rep = client.reset(Request::new(node)).await?;
-            println!("Reset response: {:?}", rep.into_inner().message);
+            println!("{:?}", rep.into_inner().message);
         }
 
         "fw" => {
@@ -94,7 +107,7 @@ async fn action_match(
                 dest_port: args.get(7).unwrap_or(&"".to_string()).parse().unwrap(),
             };
             let rep = client.add_firewall_rule(Request::new(reqest)).await?;
-            println!("fw response: {:?}", rep.into_inner().message);
+            println!("{:?}", rep.into_inner().message);
         }
         "rate" => {
             let rep = client
@@ -103,7 +116,7 @@ async fn action_match(
                     rate: args.get(2).unwrap_or(&"".to_string()).parse().unwrap(),
                 }))
                 .await?;
-            println!("rate response: {:?}", rep.into_inner().result);
+            println!("{:?}", rep.into_inner().result);
         }
 
         "encap" => {
@@ -126,20 +139,20 @@ async fn action_match(
                 .await?;
             }
 
-            println!("encap response: {:?}", rep.into_inner().answer);
+            println!("{:?}", rep.into_inner().answer);
         }
 
         "weight" => {
             let rep = client
                 .change_weight(Request::new(ChangeWeightRequest {
                     lien: Some(Link {
-                        node_a: args.get(2).unwrap_or(&"".to_string()).clone(),
+                        node_a: args.get(1).unwrap_or(&"".to_string()).clone(),
                         node_b: args.get(2).unwrap_or(&"".to_string()).clone(),
                     }),
-                    weight: args.get(3).unwrap_or(&"".to_string()).parse().unwrap(),
+                    weight: args.get(3).unwrap_or(&"".to_string()).parse().unwrap_or(1),
                 }))
                 .await?;
-            println!("weight response: {:?}", rep.into_inner().status);
+            println!("{:?}", rep.into_inner().status);
         }
 
         "add" => {
@@ -228,13 +241,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             continue;
         }
 
-        let mut args: Vec<String> = vec![];
-        if command.len() > 2 {
-            args = command
+        let mut args: Vec<String>= command
                 .iter()
                 .map(|&s| String::from(s))
-                .collect::<Vec<String>>()
-        }
+                .collect::<Vec<String>>();
+        
 
         match action_match(command[0], &mut client, &mut args).await {
             Ok(_) => {}
