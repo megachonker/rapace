@@ -37,16 +37,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b1a46d1a171d865aa5f83f92695765caa047a9b4cbae2cbf37dbd613a793fd4c"
 
 [[package]]
-name = "jaipeterlol"
-version = "0.1.0"
-dependencies = [
- "layout-rs",
- "petgraph",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "layout-rs"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -133,3 +123,13 @@ name = "unicode-ident"
 version = "1.0.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3354b9ac3fae1ff6755cb6db53683adb661634f67557942dea4facebec0fee4b"
+
+[[package]]
+name = "view_graph"
+version = "0.1.0"
+dependencies = [
+ "layout-rs",
+ "petgraph",
+ "serde",
+ "serde_json",
+]

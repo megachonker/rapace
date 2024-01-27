@@ -56,7 +56,7 @@ impl fmt::Display for GraphCluster {
         write!(
             f,
             r#"
-    subgraph Cluster_{} {{
+    subgraph cluster_{} {{
         {}"#,
             self.node.id, self.node.id
         )
