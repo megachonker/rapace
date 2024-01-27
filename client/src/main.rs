@@ -173,8 +173,8 @@ async fn action_match(
                     mode: args.get(2).unwrap_or(&"".to_string()).clone(),
                     argument: arg,
                 }))
-                .await?;
-            println!("Sucess of swap");
+                .await?.into_inner().status;
+            println!("Sucess of swap {rep}");
         }
 
         "show" => {

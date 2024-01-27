@@ -2,10 +2,9 @@ use core::fmt;
 use serde::{Deserialize, Serialize};
 use std::io::Write;
 use std::{
-    borrow::Borrow,
     collections::HashMap,
-    fmt::{write, Debug, Display},
-    fs::{self, File},
+    fmt::Debug,
+    fs::File,
     io,
     process::Command,
 };
@@ -260,9 +259,6 @@ pub fn evacuate(data:String) {
         .args(["-Tpng", "/tmp/topology.txt", "-o", "/tmp/topology.png"])
         .output()
         .expect("imposible de run la cmd dot");
-    Command::new("xdg-open")
-        .arg("/tmp/topology.png")
-        .output();
         
 }
 
