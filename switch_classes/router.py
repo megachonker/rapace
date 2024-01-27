@@ -28,7 +28,6 @@ class Router(P4switch):
         for sw_dst in self.topo.get_p4switches():
             next_hop = None
             if sw_dst == self.name:
-                #For the moment ignore -> decaplusalte in the future
                 self.api.table_add("encap_table","decap",[str(self.topo.get_switch_loopback(sw_dst))],[])
                 pass
             else:
@@ -70,11 +69,24 @@ class Router(P4switch):
         self.routes()
     
     def add_encap(self,ip_matched:str,dst:str):
+        print("ENCAP SIMPLE")
         ip_src = self.topo.get_switch_loopback(self.name)
         ip_dst = self.topo.get_switch_loopback(dst)
         self.api.table_add("encap_table","encap",[str(ip_matched)],[str(ip_src),str(ip_dst)])
         print(f"Encap for  {ip_matched} aply => encap src:{ip_src} dst:{ip_dst}")
         return f"Encap for {ip_matched} aply => encap src:{ip_src} dst:{ip_dst}"
+    
+    def add_encap_link(self,ip_matched:str,dst1:str,dst2):
+        print("ENCAP LINK")
+        ip_src = self.topo.get_switch_loopback(self.name)
+        ip_dst = self.topo.get_switch_loopback(dst1)
+        
+        #get port ds1 to reach dst2
+        outport = self.topo.node_to_node_port_num(dst1,dst2)
+        self.api.table_add("encap_table","encap_link",[str(ip_matched)],[str(ip_src),str(ip_dst),str(outport)])
+        print(f"Encap link for  {ip_matched} aply => encap src:{ip_src} dst:{ip_dst} forwarded to port {outport}")
+        return f"Encap link for {ip_matched} aply => encap src:{ip_src} dst:{ip_dst} forwarded to port {outport}"
+    
 
     # controler function
     def stat(self):

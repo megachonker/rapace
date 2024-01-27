@@ -6,11 +6,15 @@
 switchs:
   - name: s1
     role: Router
-    connect: [h1, s2]
+    connect: [h1, s2,s3]
     
   - name: s2
     role: Router
-    connect : [h2,s1]
+    connect : [s1,h2,s3]
+
+  - name: s3
+    role: Router
+    connect : [s1,s2]
 
 
   

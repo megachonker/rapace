@@ -1,6 +1,6 @@
 use api::{
     my_service_client::MyServiceClient, AddFirewallRuleRequest, ChangeWeightRequest, Link, Node,
-    RateRequest, SetEncapRequest, SwapRequest,
+    RateRequest, SetEncapRequest, SwapRequest,SetEncapLinkRequest
 };
 use tonic::{transport::Channel, Request};
 use view_graph::evacuate;
@@ -107,13 +107,25 @@ async fn action_match(
         }
 
         "encap" => {
-            let rep = client
+            let rep;
+            if args.len() == 6{
+                rep =client.set_encap_link(Request::new(SetEncapLinkRequest {
+                    node: node.node,
+                    ip_address: args[3].parse().unwrap(),
+                    nodedst_a: args[4].clone(),
+                    nodedst_b: args[5].clone(),
+                }))
+                .await?;
+            }else{
+                rep = client
                 .set_encap(Request::new(SetEncapRequest {
                     node: node.node,
                     ip_address: args.get(2).unwrap_or(&"".to_string()).parse().unwrap(),
                     nodedst: args.get(3).unwrap_or(&"".to_string()).clone(),
                 }))
                 .await?;
+            }
+
             println!("encap response: {:?}", rep.into_inner().answer);
         }
 

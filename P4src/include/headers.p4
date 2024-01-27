@@ -68,7 +68,7 @@ header udp_t{
 struct metadata {
     //Use for loadbalancer 
     bit<14> ecmp_hash;
-    bit<14> ecmp_group_id;
+    // bit<14> ecmp_group_id;
     bit<32> meter_tag;
 }
 
@@ -81,6 +81,6 @@ struct headers {
 
 struct headers_stacked {
     ethernet_t   ethernet;
-    ipv4_t[3]       ipv4;
+    ipv4_t[5]       ipv4;
 }
 

@@ -38,7 +38,8 @@ def run():
                 weight = sys.argv[4]
                 response = stub.change_weight((node,node2),weight)
                 
-                                
+                # see filters : affiche le nombre de paquets ayant été filtrés par les règles des firewalls
+                # see tunnelled : affiche le nombre de paquets que les routeurs ont encapsulés.   
             else:
                 print(f"Unknown action: {action}")
     except grpc.RpcError as e:
