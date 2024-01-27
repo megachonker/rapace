@@ -19,7 +19,7 @@ use rustyline::DefaultEditor;
 fn read_command(rl: &mut rustyline::Editor<(), rustyline::history::FileHistory>) -> Option<String> {
     // `()` can be used when no completer is required
     loop {
-        let readline = rl.readline(">> ");
+        let readline = rl.readline("RAPACE_CLI> ");
         match readline {
             Ok(line) => {
                 rl.add_history_entry(line.as_str()).unwrap();
@@ -41,6 +41,22 @@ fn read_command(rl: &mut rustyline::Editor<(), rustyline::history::FileHistory>)
     None
 }
 
+fn print_help() {
+    println!("Available actions:");
+    println!("  stat <node>                                            - Get statistics of node");
+    println!("  reset <node>                                           - Reset the node");
+    println!("  fw <node> <args>                                       - Add firewall rule");
+    println!("  rate <node> <pkt/s>                                    - Change rate of the loadbalancer ");
+    println!("  encap <node> <args>                                    - Set encapsulation");
+    println!("  weight <node1> <node2> <new_weight>                    - Change weight of link node1-node2");
+    println!("  add <node1> <node2>                                    - Add link node1-node2");
+    println!("  remove <node1> <node2>                                 - Remove link node1-node2 (if it possible)");
+    println!("  swap <node> <role> [neigboor1 neigboor2 ...]           - Swap role of the node and spécify the neighboor");
+    println!("  show topology                                          - Show topology");
+
+    // Ajoutez les informations d'utilisation pour d'autres actions ici.
+}
+
 async fn action_match(
     action: &str,
     client: &mut MyServiceClient<Channel>,
@@ -48,10 +64,6 @@ async fn action_match(
     args: &Vec<String>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     match action {
-        // "list" => {
-        //     let rep = client.list_node(Request::new(api::Empty {})).await?;
-        //     println!("list response: {:?}", rep.into_inner().nodes);
-        // }
         "stat" => {
             let rep = client.get_stat(Request::new(node)).await?;
             println!("Stat response: {:?}", rep.into_inner().stat_info);
@@ -148,7 +160,10 @@ async fn action_match(
                 .output()
                 .unwrap();
         }
-        // Ajoutez les autres cas d'action ici, en suivant le même schéma.
+
+        "help" =>{
+            print_help() 
+        }
         _ => {
             println!("Unknown action: {}", action);
         }
@@ -184,19 +199,35 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             break;
         }
         let command = command.unwrap();
-        let command = command.split("").collect::<Vec<&str>>();
-        let node = Node {
-            node: String::from(command[1]),
+        let command = command.split(" ").collect::<Vec<&str>>();
+        if command.len() == 0 || command[0] == ""{
+            continue;
+        }
+        let node = if command.len() >1{
+
+            Node {
+                node: String::from(command[1])}
+            
+        }
+        else{
+            Node {
+                node: String::from("")
+            }
         };
+        let mut args : Vec<String> = vec![];
+        if command.len() > 2{
+            args = command[2..]
+                .to_vec()
+                .iter()
+                .map(|&s| String::from(s))
+                .collect::<Vec<String>>()
+        }
+        
         action_match(
             command[0],
             &mut client,
             node,
-            &command[1..]
-                .to_vec()
-                .iter()
-                .map(|&s| String::from(s))
-                .collect(),
+            &args,
         )
         .await?;
     }
