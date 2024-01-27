@@ -9,6 +9,7 @@ use view_graph::evacuate;
 pub mod api {
     tonic::include_proto!("myservice");
 }
+use std::process::Command;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -128,6 +129,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .await?;
             let thejson:String = rep.into_inner().mon_json;
             evacuate(thejson.clone());
+            Command::new("geeqie").args(["/tmp/topology.png"]).output().unwrap();
         }
         // Ajoutez les autres cas d'action ici, en suivant le même schéma.
         _ => {

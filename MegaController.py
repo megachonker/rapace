@@ -244,7 +244,8 @@ class MegaController:
         
         for new_neig in need_remove_link:
             self.switchs[new_neig].remove_link(node)
-        
+            
+        self.logic_topo.switch_info(node,role,connect)
         self.save_topo()
         print("return msg a swap success")
         return "swap success"   

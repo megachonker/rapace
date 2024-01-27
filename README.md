@@ -13,10 +13,10 @@ Rapace Project is a network simulation that features configurable equipment, inc
 To get the depot, you can download it from git 
 ```bash
 # Example installation commands
-git clone https://github.com/yourusername/yourproject.git
+git clone 
 ```
 
-Before starting, you need to install and compile some elements. Ensure you have Rust, Python 3.7, the gRPC API, and other dependencies installed. To simplify this process, run the `install_dep.bash` script with sudo permission.
+Before starting, you need to install and compile some elements. Ensure you have Rust, Python 3.7, the gRPC API, and other dependencies installed. To simplify this process, run the grpc_build_install_dep.bash` script with sudo permission.
 
 ## Basic Launch
 
