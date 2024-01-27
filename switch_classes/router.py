@@ -121,5 +121,4 @@ class Router(P4switch):
                 self.port_info.remove(n)
                 # self.update_tables()  The megacotroller will force router to updates tables
                 return
-        
-        raise Exception("not in neighboor list")
+        print (f"Error {neighboor} not in list")
