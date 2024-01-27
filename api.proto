@@ -30,7 +30,7 @@ message ChangeLinkResponce{
 
 message ChangeWeightRequest{
   Link lien =1 ;
-  string weight =2;
+  int32 weight =2;
 }
 
 message Json{

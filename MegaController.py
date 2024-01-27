@@ -112,7 +112,7 @@ class MegaController:
     
 
     def save_topo(self):
-        self.logic_topo.save_topo(self.logic_topo_path)
+        return self.logic_topo.save_topo(self.logic_topo_path)
         
     def newtopo_router(self):
         """ Reload the router pass the new topo to the switch (and recalculate route) """

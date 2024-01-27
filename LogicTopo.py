@@ -78,6 +78,7 @@ class LogicTopo(NetworkGraph):
         graph_dict = json_graph.node_link_data(self)
         with open(path,"w") as f:
             json.dump(graph_dict,f,indent=2)
+        return json.dumps(graph_dict,indent=2)
             
     def get_hosts_connected_to(self, name):
         """ Rewrite this one because we delete some link from the physical topo where

@@ -2,18 +2,16 @@ use api::{
     my_service_client::MyServiceClient, AddFirewallRuleRequest, ChangeWeightRequest, Link, Node,
     RateRequest, SetEncapRequest, SwapRequest,
 };
-use view_graph::evacuate;
 use std::env;
-use tonic::{transport::Channel, Request};
 use std::fs;
+use tonic::{transport::Channel, Request};
+use view_graph::evacuate;
 pub mod api {
     tonic::include_proto!("myservice");
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-
-
     let args: Vec<String> = env::args().collect();
 
     if args.len() < 3 {
@@ -37,7 +35,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         //     let rep = client.list_node(Request::new(api::Empty {})).await?;
         //     println!("list response: {:?}", rep.into_inner().nodes);
         // }
-
         "stat" => {
             let rep = client.get_stat(Request::new(node)).await?;
             println!("Stat response: {:?}", rep.into_inner().stat_info);
@@ -126,8 +123,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
 
         "show" => {
-            let data = fs::read_to_string("../logic_topology.json").expect("failed load the file");
-            evacuate(data);
+            let rep = client
+                .show_topo(Request::new(api::Empty {  }))
+                .await?;
+            let thejson:String = rep.into_inner().mon_json;
+            evacuate(thejson.clone());
         }
         // Ajoutez les autres cas d'action ici, en suivant le même schéma.
         _ => {

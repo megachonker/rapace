@@ -68,7 +68,7 @@ class MyService(api_pb2_grpc.MyServiceServicer):
     
     @grpc_error_handler
     def show_topo(self, request, context):
-        return api_pb2.Json(mon_json="non implémenter doit envoyer la topo en json degeux")
+        return api_pb2.Json(mon_json=str(mega_controller.save_topo()))
 
     @grpc_error_handler
     def add_link(self, request, context):
@@ -82,14 +82,13 @@ class MyService(api_pb2_grpc.MyServiceServicer):
     
     @grpc_error_handler
     def swap_controler(self, request, context):
-        print(f"Swap request {request}")
         rep = str(mega_controller.swap(node=request.target.node,role=request.mode,connect=request.argument ))
-        print(f"result of swap {rep}")
         return api_pb2.SwapResponse(status=f"swap {rep}")
 
     @grpc_error_handler
     def change_weight(self, request, context):
-        return api_pb2.ChangeLinkResponce(status=f"mega_controller.change_weight() {request.lien} et {request.weight}")
+        rep = str(mega_controller.change_weight(weight=request.weight,link=(request.lien.nodeA,request.lien.nodeB) ))
+        return api_pb2.ChangeLinkResponce(status=f"change_weight {rep} {request.lien} et {request.weight}")
         
     
 
