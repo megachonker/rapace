@@ -2,6 +2,8 @@ use api::{
     my_service_client::MyServiceClient, AddFirewallRuleRequest, ChangeWeightRequest, Link, Node,
     RateRequest, SetEncapRequest, SwapRequest,
 };
+use clap::builder::Str;
+use clap::command;
 use std::env;
 use std::fs;
 use tonic::{transport::Channel, Request};
@@ -11,12 +13,40 @@ pub mod api {
 }
 use std::process::Command;
 
+use rustyline::error::ReadlineError;
+use rustyline::DefaultEditor;
+
+fn read_command(rl: &mut rustyline::Editor<(), rustyline::history::FileHistory>) -> Option<String> {
+    // `()` can be used when no completer is required
+    loop {
+        let readline = rl.readline(">> ");
+        match readline {
+            Ok(line) => {
+                rl.add_history_entry(line.as_str()).unwrap();
+                return Some(line);
+            }
+            Err(ReadlineError::Interrupted) => {
+                continue;
+            }
+            Err(ReadlineError::Eof) => {
+                println!("Exit");
+                break;
+            }
+            Err(err) => {
+                println!("Error: {:?}", err);
+                break;
+            }
+        }
+    }
+    None
+}
+
 async fn action_match(
     action: &str,
-    client:& mut  MyServiceClient<Channel>,
+    client: &mut MyServiceClient<Channel>,
     node: Node,
-    args: & Vec<String>,
-) -> Result<(),Box<dyn std::error::Error>>{
+    args: &Vec<String>,
+) -> Result<(), Box<dyn std::error::Error>> {
     match action {
         // "list" => {
         //     let rep = client.list_node(Request::new(api::Empty {})).await?;
@@ -122,30 +152,53 @@ async fn action_match(
         _ => {
             println!("Unknown action: {}", action);
         }
-        
     }
     Ok(())
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let args: Vec<String> = env::args().collect();
+    // let args: Vec<String> = env::args().collect();
 
-    if args.len() < 3 {
-        println!("Usage:./client <action> <node> [additional_args]");
-        return Ok(());
-    }
+    // if args.len() < 3 {
+    //     println!("Usage:./client <action> <node> [additional_args]");
+    //     return Ok(());
+    // }
 
-    let action = (&args[1]).as_str();
-    let node = Node {
-        node: (&args[2]).clone(),
-    };
+    // let action = (&args[1]).as_str();
+    // let node = Node {
+    //     node: (&args[2]).clone(),
+    // };
 
     let channel = Channel::from_static("http://localhost:50051")
         .connect()
         .await?;
 
     let mut client: MyServiceClient<Channel> = MyServiceClient::new(channel);
-    action_match(action, &mut client, node, & args).await?;
+
+    let mut rl: rustyline::Editor<(), rustyline::history::FileHistory> = DefaultEditor::new()?;
+
+    loop {
+        let command = read_command(&mut rl);
+        if command.is_none() {
+            break;
+        }
+        let command = command.unwrap();
+        let command = command.split("").collect::<Vec<&str>>();
+        let node = Node {
+            node: String::from(command[1]),
+        };
+        action_match(
+            command[0],
+            &mut client,
+            node,
+            &command[1..]
+                .to_vec()
+                .iter()
+                .map(|&s| String::from(s))
+                .collect(),
+        )
+        .await?;
+    }
     Ok(())
 }
