@@ -257,17 +257,17 @@ pub fn evacuate(data:String) {
 
     yiyip(cluster_list, parsed.links).expect("erreur entrée sortie");
     Command::new("dot")
-        .args(["-Tpng", "/tmp/boykisser.txt", "-o", "/tmp/boykisser.png"])
+        .args(["-Tpng", "/tmp/topology.txt", "-o", "/tmp/topology.png"])
         .output()
         .expect("imposible de run la cmd dot");
     Command::new("xdg-open")
-        .arg("/tmp/boykisser.png")
+        .arg("/tmp/topology.png")
         .output();
         
 }
 
 fn yiyip(cluster_list: HashMap<String, GraphCluster>, link_list: Vec<Link>) -> io::Result<()> {
-    let mut outfile = File::create("/tmp/boykisser.txt")?;
+    let mut outfile = File::create("/tmp/topology.txt")?;
 
     let header = r#"
 graph G {

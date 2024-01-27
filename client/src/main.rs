@@ -9,6 +9,7 @@ use std::fs;
 pub mod api {
     tonic::include_proto!("myservice");
 }
+use std::process::Command;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -128,6 +129,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         "show" => {
             let data = fs::read_to_string("../logic_topology.json").expect("failed load the file");
             evacuate(data);
+            Command::new("geeqie").args(["/tmp/topology.png"]).output().unwrap();
         }
         // Ajoutez les autres cas d'action ici, en suivant le même schéma.
         _ => {

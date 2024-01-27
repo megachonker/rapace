@@ -92,6 +92,7 @@ control MyIngress(inout headers_stacked hdr,
 
 
     action forward(macAddr_t dstAddr, egressSpec_t port) {
+        log_msg("Salut {}",{dstAddr});
         hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
 
         hdr.ethernet.dstAddr = dstAddr;
