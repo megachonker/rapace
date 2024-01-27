@@ -13,9 +13,9 @@ use std::process::Command;
 
 async fn action_match(
     action: &str,
-    client:&  MyServiceClient<Channel>,
+    client:& mut  MyServiceClient<Channel>,
     node: Node,
-    args: Vec<String>,
+    args: & Vec<String>,
 ) -> Result<(),Box<dyn std::error::Error>>{
     match action {
         // "list" => {
@@ -146,6 +146,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .await?;
 
     let mut client: MyServiceClient<Channel> = MyServiceClient::new(channel);
-    action_match(action, & client, node, args);
+    action_match(action, &mut client, node, & args);
     Ok(())
 }
