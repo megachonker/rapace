@@ -2,10 +2,6 @@ use api::{
     my_service_client::MyServiceClient, AddFirewallRuleRequest, ChangeWeightRequest, Link, Node,
     RateRequest, SetEncapRequest, SwapRequest,
 };
-use clap::builder::Str;
-use clap::command;
-use std::env;
-use std::fs;
 use tonic::{transport::Channel, Request};
 use view_graph::evacuate;
 pub mod api {
