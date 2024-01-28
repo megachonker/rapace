@@ -7,6 +7,7 @@ use view_graph::evacuate;
 pub mod api {
     tonic::include_proto!("myservice");
 }
+use std::env;
 use std::process::Command;
 
 use rustyline::error::ReadlineError;
@@ -198,19 +199,12 @@ async fn action_match(
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // let args: Vec<String> = env::args().collect();
+    print!("cargo r [VM_IP_ADDR]");
+    let args: Vec<String> = env::args().collect();
+    let target = args.get(1).unwrap_or(&"localhost".into()).clone();
+    let target = format!("http://{target}:50051");
 
-    // if args.len() < 3 {
-    //     println!("Usage:./client <action> <node> [additional_args]");
-    //     return Ok(());
-    // }
-
-    // let action = (&args.get(1).unwrap_or(&"".to_string())).as_str();
-    // let node = Node {
-    //     node: (&args.get(2).unwrap_or(&"".to_string())).clone(),
-    // };
-
-    let channel = Channel::from_static("http://localhost:50051")
+    let channel = Channel::from_shared(target).expect("bad host provided")
         .connect()
         .await?;
 
