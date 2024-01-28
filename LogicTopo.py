@@ -4,7 +4,6 @@ from networkx.readwrite import json_graph
 from p4utils.utils.topology import NetworkGraph
 from p4utils.utils.helper import load_topo
 
-
 def load_logictopo(json_path):
     """Load the topology from the path provided.
 
@@ -16,7 +15,6 @@ def load_logictopo(json_path):
     """
     
     return LogicTopo(load_topo(json_path))
-        
         
 class LogicTopo(NetworkGraph):
     
@@ -86,9 +84,8 @@ class LogicTopo(NetworkGraph):
         We just check if the hsot is logically connect to the node"""
         
         hosts = super().get_hosts_connected_to(name)
-        
-        
         return [host for host in hosts if self.has_edge(host,name)]
+    
     
     def are_neighbors(self, node1, node2):
         """ Same idea, need to rewrite this one because it take physical topology not to logic  """

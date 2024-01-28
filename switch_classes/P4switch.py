@@ -17,8 +17,6 @@ class NodeInfo:
         # self.ip = topo.node_to_node_interface_ip(node_name,base_node).split('/')[0]
         self.port = topo.node_to_node_port_num(base_node,node_name)
         
-        
-
 
 class P4switch:
     def __init__(self,name : str,connect,topo : LogicTopo ) -> None:

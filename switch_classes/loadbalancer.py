@@ -16,10 +16,7 @@ class LoadBalancer(P4switch):
         super().__init__(name,out + [in_],topo)
         self.role = "LoadBalancer"
         
-        
-        
         self.rates_max = 1* SEC_METER #1 sec
-        
         
         self.next_in = Queue()  #Use when swap node/link to store potential next in
         # out_backup is not needed because we can put inifinit output port
@@ -49,28 +46,21 @@ class LoadBalancer(P4switch):
         self.api.table_set_default("filter", "drop", [])
     
     def init_table(self):
-        
-        
         self.clear_table()
         
-       
         for out in self.out_info:
             self.api.table_add("traffic_type","set_nhop_out_in",[str(out.port)],[str(self.in_info.mac),str(self.in_info.port)])
         
         self.api.table_add("traffic_type","ecmp_group",[str(self.in_info.port)],[str(len(self.out_info))])
         
-        
         for i in range(len(self.out_info)):
             self.api.table_add("ecmp_group_to_nhop","set_nhop_in_out",[str(i)],[str(self.out_info[i].mac),str(self.out_info[i].port)])
-            
             
         self.api.table_add("filter", "drop", [str(2)], [])
         self.api.table_add("filter", "advertise", [str(1)], [])
         self.api.table_add("filter", "NoAction", [str(0)], [])
         
 
-        
-        
     # controler function
     def stat(self):
         print(f"stat du switch {self.name}")    
@@ -81,6 +71,7 @@ class LoadBalancer(P4switch):
         self.rates_max = 1* SEC_METER
         self.init_table()
         self.init_conter_and_co()
+
     # dedicated
     def init_conter_and_co(self):
         self.api.meter_array_set_rates("the_meter",[(self.rates_max/2,1),(self.rates_max,1)])

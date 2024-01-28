@@ -28,6 +28,7 @@ parser MyParser(packet_in packet,
     }
 
     state parse_ipv4 {
+        //we use next for working with stack header
         packet.extract(hdr.ipv4.next);
         transition select(hdr.ipv4.last.protocol) {
             TYPE_ENCAP: parse_ipv4;
@@ -42,7 +43,6 @@ parser MyParser(packet_in packet,
 
 control MyDeparser(packet_out packet, in headers_stacked hdr) {
     apply {
-
         //parsed headers_stacked have to be added again into the packet.
         packet.emit(hdr.ethernet);
         packet.emit(hdr.ipv4);
@@ -65,8 +65,12 @@ control MyVerifyChecksum(inout headers_stacked hdr, inout metadata meta) {
 control MyIngress(inout headers_stacked hdr,
                   inout metadata meta,
                   inout standard_metadata_t standard_metadata) {
+
+    //counter
     counter(1, CounterType.packets_and_bytes) encap_counter;
     counter(1, CounterType.packets_and_bytes) total_packet;
+    
+    //local variable
     bool already_forwarded = false;
     bool encaped = false;
 
@@ -87,18 +91,17 @@ control MyIngress(inout headers_stacked hdr,
         //do nothing
     }
 
-    
-
     action decap(){
-        //check un champ ip pour le port dst
-        
         //we use the frag number to store forward port
         egressSpec_t port = (bit<9>)hdr.ipv4[0].identification;
+        //if frag is set
         if(port != 0){
+            //forward to the port and add broadcast destination
             forward(0xfffffffffff,port);
             already_forwarded = true;
         }
 
+        //pop one ip header
         hdr.ipv4.pop_front(1);
     }
 
@@ -113,8 +116,10 @@ control MyIngress(inout headers_stacked hdr,
         encaped = true;
     }
 
+    //used when need to reach a specific link
     action encap_link(ip4Addr_t source,ip4Addr_t destination,egressSpec_t port){
         encap(source,destination);
+        //we cast the port inside a frag id field
         hdr.ipv4[0].identification=(bit<16>)port;
     }
 
@@ -148,15 +153,21 @@ control MyIngress(inout headers_stacked hdr,
 
 
     apply {
+        //count every packet
         total_packet.count((bit<32>)0);
+        
         encap_table.apply();
         if(encaped){
             encap_counter.count((bit<32>)0);
         }
+
+        //if there is needed to manualy reach a link
+        //bypass the routing table
         if(!already_forwarded){
             ipv4_lpm.apply();
         }
 
+        //for ttl
         if (hdr.ipv4[0].ttl == 0){
             mark_to_drop(standard_metadata);
         }

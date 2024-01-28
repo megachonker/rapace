@@ -7,6 +7,7 @@ from switch_classes.firewall import Flow
 from MegaController import MegaController
 
 
+# choose if we want to lunch a specific topology
 import sys 
 if len(sys.argv) >1:
     mega_controller = MegaController(conf_path=sys.argv[1])
@@ -16,6 +17,7 @@ else:
 import functools
 import logging
 
+# used to have more cleaner log
 def grpc_error_handler(f):
     @functools.wraps(f)
     def wrapper(*args, **kwargs):
@@ -33,9 +35,12 @@ def grpc_error_handler(f):
             return None  # Or return a default instance of the expected response type
     return wrapper
 
+# main grpc definition
+# each definition are a function defined in the proto file
 class MyService(api_pb2_grpc.MyServiceServicer):
     @grpc_error_handler
     def Reset(self, request, context):
+        # we select the specific node from the mega controler
         mega_controller.switchs[request.node].reset()
         return api_pb2.ResetResponse(message=True)
 
@@ -50,7 +55,7 @@ class MyService(api_pb2_grpc.MyServiceServicer):
 
     @grpc_error_handler
     def AddFirewallRule(self, request, context):
-        #association table 
+        #association table used to translate from str to hex
         translate = {
             'TCP':6,
             'UDP':17,
@@ -73,7 +78,6 @@ class MyService(api_pb2_grpc.MyServiceServicer):
     def set_encap_link(self, request, context):
         return api_pb2.SetEncapResponce(answer=str(mega_controller.switchs[request.node].add_encap_link(request.ip_address,request.nodedstA,request.nodedstB)))
         
-
     @grpc_error_handler
     def show_topo(self, request, context):
         return api_pb2.Json(mon_json=str(mega_controller.save_topo()))
@@ -98,11 +102,10 @@ class MyService(api_pb2_grpc.MyServiceServicer):
         rep = str(mega_controller.change_weight(weight=request.weight,link=(request.lien.nodeA,request.lien.nodeB) ))
         return api_pb2.ChangeLinkResponce(status=f"change_weight {rep} {request.lien} et {request.weight}")
         
-    
-
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     api_pb2_grpc.add_MyServiceServicer_to_server(MyService(), server)
+    # normaly grpc can be used 
     server.add_insecure_port('[::]:50051')
     server.start()
     print("Switches loaded. gRPC server listening on port 50051.")

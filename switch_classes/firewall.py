@@ -8,7 +8,7 @@ from queue import LifoQueue
 
 from switch_classes.P4switch import P4switch, NodeInfo
 
-
+# describe a flow used to match a packet flux
 Flow = namedtuple('Flow', ['source_ip', 'dest_ip', 'protocol', 'source_port', 'dest_port'])
 
 class Firewall(P4switch):
@@ -29,9 +29,7 @@ class Firewall(P4switch):
 
     def init_table(self):
         
-        self.clear_table()
-
-    
+        self.clear_table()    
         self.api.table_add("route","forward",[str(self.connect[0].port)],[str(self.connect[1].mac),str(self.connect[1].port)])
         self.api.table_add("route","forward",[str(self.connect[1].port)],[str(self.connect[0].mac),str(self.connect[0].port)])
 
