@@ -2,7 +2,6 @@
 # DO not modify, create another one if you want
 # ***REMOVED***
 
-
 switchs:
   - name: s1
     role: Router

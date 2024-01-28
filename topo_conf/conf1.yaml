@@ -1,7 +1,6 @@
 # DO not modify, create another one if you want
 # ***REMOVED***
 
-
 switchs:
   - name: s1
     role: LoadBalancer
@@ -20,7 +19,6 @@ switchs:
     role: LoadBalancer
     connect: [h4, s2, s3]
     in: h4
-
 
   - name: s5
     role: Firewall

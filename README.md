@@ -2,24 +2,41 @@
 
 Rapace Project is a network simulation that features configurable equipment, including routers and firewalls. The simulation is built upon the [mininet](https://github.com/nsg-ethz/mini_internet_project) framework. This project utilizes the [P4](https://p4.org/p4-spec/docs/P4-16-v1.0.0-spec.html) language for the data-plane and leverages the [P4utils](https://github.com/nsg-ethz/p4-utils) Python libraries for the control-plane.
 
-## Table of Contents
+the idea is to make a controle plane that drive the dataplane, that allow a user to quickly reconfigure a SDN.
 
-- [Installation](#installation)
-- [Usage](#usage)
-- [Files in the Depot](#files-in-the-depot)
+# Table of Contents
 
+- [QuickStart](#QuickStart)
+    - [Installation](#installation)
+    - [Usage](#launch)
+- [Features](#features)
+    - [meta-controleur](#meta-controleur)
+    - [controlers](#controlers)
+    - [CLI](#cli)
+- [Files in the Depot](#repostructure)
+
+
+
+# QuickStart
 ## Installation
 
-To get the depot, you can download it from git 
+- To get the depot, you can download it from git be sure to have proper right for clone it.
+- having a working P4 vm with Thrift patch enabled
+
 ```bash
-# Example installation commands
-git clone 
+git clone
+
+#Before starting, you need to install and compile some elements. Ensure you have Rust, Python 3.7, the gRPC API, and other dependencies installed. 
+
+#To simplify this process, run the script with sudo.
+sudo bash grpc_build_install_dep.bash
+
+#after that we are on same page
 ```
 
-Before starting, you need to install and compile some elements. Ensure you have Rust, Python 3.7, the gRPC API, and other dependencies installed. To simplify this process, run the `sudo bash grpc_build_install_dep.bash` script with sudo permission.
 
-## Basic Launch
 
+## Launch
 To launch a simple network, follow these steps:
 
 1. Load the physical topology with:
@@ -27,6 +44,11 @@ To launch a simple network, follow these steps:
     ```bash
     sudo python network.py
     ```
+    you can lunch command inside it like `h1 ping h4`.
+
+    if you have issue here maybe you need to check if you have the thrift patch working
+
+    *the physical topology are verry strong if somthing wrong it is not from here it support manny server restart*
 
 2. Launch the logical topology with:
 
@@ -34,26 +56,100 @@ To launch a simple network, follow these steps:
     python grpc_server.py [topo_conf/conf_subject.yaml]
     ```
 
-    At this point, the network is launched, and you can manage it using the API. To interact with it you can use the Rust client. Build and run it with:
+    At this point, the network is launched, and you can manage it using the API. 
 
+3. connect the client
+    #### To interact with it you can use the Rust client:
+    - it made for being lunched outside the vm, for that specify the ip of your vm
+    - if you run it on the vm you need too ensure that you have ssh forwarding activated with ssh -X *you need to log in and out one time (x forwarding bug)*
+    - be sure having all dependancy installed and having the protofile on the right place(all is done thanks to the install script), you can watch the installation script if you want to do it manualy
     ```bash
+    ip a|grep enp1|grep inet #to get your vm ip
     cd client/
-    cargo run
+    cargo run [VM IP]
     ```
 
     Inside the client, you'll find the help command.
 
-Inside the depot, you can find:
+3.  enjoy you have help, you can try show topo
 
+
+# Features:
+## meta-controleur
+*connais tout du réseaux et peut lancer des controler sur des switch*
+
+- [x] network knowlege
+- [x] lunch controler
+- [x] add link
+- [x] remove link
+- [x] show topo
+- [x] swap
+- [x] status
+
+## controlers
+*L’instanciation d’un contrôleur démarrera donc par l’ouverture d’une
+connexion Thrift, une réinitialisation des états présents sur le switch, et l’upload du nouveau data-plane
+compilé.*
+
+- [x] router
+- [x] load-balancer
+- [x] firewall
+- [x] repeter
+
+
+
+### Firewall
+- possède 2 port IN => OUT.
+- add_fw_rule <flow>
+- compte les packet filtrée et recus
+
+### Load balancer
+
+- 1:N Une entrée Plusieur sortie
+- choix hash de du flux pour la sortie
+- limite ``set_rate_lb <pkt/s> (voir choise)``
+- nombre packet recus
+
+### Router:
+- propose segment routing
+- ajouter point de passage ``add_encap_node <flow> <node or link>``
+- compte nombre de packet reçus total
+
+*flow => IP source, IP dst, protocole, port source, port destination*
+
+## CLI
+enable user to modulate the network
+- [x] show topology
+- [x] modify topology
+- [x] interactive shell
+- [x] remote access
+
+
+# RepoStructure:
+### Runable
+- `grpc_server.py`: lunch server and lunch topo given on argument
+- `grpc_build_install_dep.bash`: install dep and used to compile python grpc
+- `network.py`: lunch with sudo build up the mininet physical network
+
+### source code directory 
 - `client/`: The Rust client for the gRPC API.
-- `P4src/`: The data-plane code for the equipment.
+- `P4src/`: The data-plane P4 code for the equipment.
 - `switch_classes/`: The control-plane logic for the equipment.
-- `scripts/`: Python scripts for testing the network.
 - `topo_conf/`: Various YAML configurations and their representations.
+- `api.proto`: Main definition of the API grpc
 
 
-  
+### DebugFile
+***port number** are same that port displayed by the **grpc client command show***
+- `log/`: inside it you have log of all switch 
+- `pcap/`: capture of all port of all switch
 
+if *sadly* you use windows and vscode to watch logs you need to reload the window to see diff
 
-
-
+# to remove: 
+- `rapport/` pas a jour
+- `script/` jamais utiliser de ma part
+- `choise.md` plus a jour
+- `client.py` déprécier
+- `RP23 - Project.pdf` pas du code source ?
+- `todo.md` merged

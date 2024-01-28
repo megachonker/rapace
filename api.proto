@@ -15,6 +15,7 @@ service MyService {
   rpc swap_controler(SwapRequest) returns (SwapResponse);
   rpc change_weight(ChangeWeightRequest) returns (ChangeLinkResponce);
 }
+
 message SwapResponse{
   string status = 1;
 }

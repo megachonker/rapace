@@ -28,7 +28,9 @@ header ipv4_t {
     bit<2>    ecn;
     bit<16>   totalLen;
     bit<16>   identification;
+    //to small fort storing link when encap
     bit<3>    flags;
+    //Link encapsulation use fragOffset
     bit<13>   fragOffset;
     bit<8>    ttl;
     bit<8>    protocol;
@@ -78,9 +80,10 @@ struct headers {
     tcp_t        tcp;
     udp_t        udp;
 }
-
+// special header used only by the router
 struct headers_stacked {
     ethernet_t   ethernet;
+    //we can stack 5 level of encapsulation
     ipv4_t[5]       ipv4;
 }
 

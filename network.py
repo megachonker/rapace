@@ -31,10 +31,6 @@ def main(Cli=True,nb_switch=10):
         for next_sw in switchs[i+1::]:
             net.addLink(s,next_sw)
 
-
-
-
-
     # Assignment strategy
     net.l3()
 

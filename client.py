@@ -1,3 +1,6 @@
+# DEPRECIED
+# OLD CLIENT ON PYTHON GO TO CLIENT/SRC/MAIN.RS
+
 import sys
 import grpc
 import api_pb2

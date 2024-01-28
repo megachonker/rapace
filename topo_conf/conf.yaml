@@ -1,8 +1,3 @@
-
-
-
-
-
 switchs:
   - name: s1
     role: LoadBalancer
@@ -17,10 +12,6 @@ switchs:
     role: LoadBalancer
     connect : [s1,s2,h3]
     in : h3
-
-
-  
-
 
   # - name: s5
   #   role: Firewall
@@ -58,10 +49,6 @@ switchs:
 #   - name: s6
 #     role: Repeater
 #     connect: [s7, h6]
-
-
-
-
 
   # - name: s1
   #   role: Repeater

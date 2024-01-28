@@ -31,11 +31,10 @@ control MyIngress(inout headers hdr,
     direct_counter(CounterType.packets) filter_hit;
     counter(1, CounterType.packets_and_bytes) total_packet;
 
+
     action forward(macAddr_t dstAddr, egressSpec_t port) {
         hdr.ethernet.srcAddr = hdr.ethernet.dstAddr;
-
         hdr.ethernet.dstAddr = dstAddr;
-
         standard_metadata.egress_spec = port;
     }
 
@@ -75,15 +74,18 @@ control MyIngress(inout headers hdr,
         }
         size = 2;
         default_action = drop;
-        // counters=filter_hit;
     }
 
     apply {
+        //count all packet that enter on the switch
         total_packet.count((bit<32>)0);
+
         //check if allowed
         if  (! rule.apply().hit){
             route.apply();
         }
+
+        //drop packet if ttl is 0
         if (hdr.ipv4.ttl == 0){
             mark_to_drop(standard_metadata);
         }

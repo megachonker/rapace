@@ -115,9 +115,7 @@ control MyIngress(inout headers hdr,
             NoAction;
             drop;
         }
-
         size = 1024;
-
     }
 
     apply {
@@ -130,6 +128,8 @@ control MyIngress(inout headers hdr,
                 }
             }
         }
+
+        //ttl check
         if (hdr.ipv4.ttl == 0){
             mark_to_drop(standard_metadata);
         }

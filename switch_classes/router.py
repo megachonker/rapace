@@ -97,7 +97,6 @@ class Router(P4switch):
         print(f"reset du switch {self.name}")
         self.init_table()
 
-    
     def newtopo_recalculate(self,new_topo : LogicTopo):
         self.topo = new_topo
         self.update_tables() 
@@ -109,7 +108,6 @@ class Router(P4switch):
         #do nothing because rotes do all of the jobes (router can have infit neighbour)
         self.port_info.append(NodeInfo(self.name,new_neigh,self.topo))
         return f"[{self.name}]New link "
-        pass
     
     def can_remove_link(self,neighboor:str):
         """ Need to be oerwride """
