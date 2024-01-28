@@ -35,7 +35,7 @@ control MyIngress(inout headers hdr,
         mark_to_drop(standard_metadata);
     }
 
-    action ecmp_group( bit<16> num_nhops){
+    action hash_calcule( bit<16> num_nhops){
         hash(meta.ecmp_hash,
 	    HashAlgorithm.crc16,
 	    (bit<1>)0,
@@ -78,7 +78,7 @@ control MyIngress(inout headers hdr,
     }
 
 
-    table ecmp_group_to_nhop {
+    table loadbalance {
         key = {
             meta.ecmp_hash: exact;
         }
@@ -97,7 +97,7 @@ control MyIngress(inout headers hdr,
         }
         actions = {
             set_nhop_out_in;
-            ecmp_group;
+            hash_calcule;
             drop;
         }
         size = 1024;
@@ -124,8 +124,8 @@ control MyIngress(inout headers hdr,
         total_packet.count((bit<32>)0);
         if (hdr.ipv4.isValid()){
             switch (traffic_type.apply().action_run){
-                ecmp_group: {
-                    ecmp_group_to_nhop.apply();
+                hash_calcule: {
+                    loadbalance.apply();
                     filter.apply();
                 }
             }

@@ -40,12 +40,12 @@ class LoadBalancer(P4switch):
         
     def clear_table(self):
         self.api.table_clear("traffic_type")
-        self.api.table_clear("ecmp_group_to_nhop")
+        self.api.table_clear("loadbalance")
         self.api.table_clear("filter")
         
         #Normally the default is not clear but ... :
         self.api.table_set_default("traffic_type","drop",[])
-        self.api.table_set_default("ecmp_group_to_nhop","drop",[])
+        self.api.table_set_default("loadbalance","drop",[])
         self.api.table_set_default("filter", "drop", [])
     
     def init_table(self):
@@ -57,11 +57,11 @@ class LoadBalancer(P4switch):
         for out in self.out_info:
             self.api.table_add("traffic_type","set_nhop_out_in",[str(out.port)],[str(self.in_info.mac),str(self.in_info.port)])
         
-        self.api.table_add("traffic_type","ecmp_group",[str(self.in_info.port)],[str(len(self.out_info))])
+        self.api.table_add("traffic_type","hash_calcule",[str(self.in_info.port)],[str(len(self.out_info))])
         
         
         for i in range(len(self.out_info)):
-            self.api.table_add("ecmp_group_to_nhop","set_nhop_in_out",[str(i)],[str(self.out_info[i].mac),str(self.out_info[i].port)])
+            self.api.table_add("loadbalance","set_nhop_in_out",[str(i)],[str(self.out_info[i].mac),str(self.out_info[i].port)])
             
             
         self.api.table_add("filter", "drop", [str(2)], [])

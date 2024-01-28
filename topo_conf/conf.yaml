@@ -5,16 +5,18 @@
 
 switchs:
   - name: s1
-    role: Router
+    role: LoadBalancer
     connect: [h1, s2,s3]
+    in : h1
     
   - name: s2
-    role: Router
-    connect : [s1,h2,s3]
+    role: Repeater
+    connect : [s1,s3]
 
   - name: s3
-    role: Router
-    connect : [s1,s2]
+    role: LoadBalancer
+    connect : [s1,s2,h3]
+    in : h3
 
 
   
