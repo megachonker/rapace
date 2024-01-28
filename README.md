@@ -76,7 +76,7 @@ To launch a simple network, follow these steps:
 
 # Features:
 ## meta-controleur
-*connais tout du réseaux et peut lancer des controler sur des switch*
+*Know all network, can launch controller on switchs*
 
 - [x] network knowlege
 - [x] lunch controler
@@ -87,9 +87,7 @@ To launch a simple network, follow these steps:
 - [x] status
 
 ## controlers
-*L’instanciation d’un contrôleur démarrera donc par l’ouverture d’une
-connexion Thrift, une réinitialisation des états présents sur le switch, et l’upload du nouveau data-plane
-compilé.*
+*The instantiation of a controller will therefore start with the opening of a Thrift connection, resetting the current states of the switch, and uploading the new compiled data-plane. compiled.*
 
 - [x] router
 - [x] load-balancer
@@ -99,21 +97,20 @@ compilé.*
 
 
 ### Firewall
-- possède 2 port IN => OUT.
+- has 2 ports IN => OUT.
 - add_fw_rule <flow>
-- compte les packet filtrée et recus
+- counts filtered and received packets
 
 ### Load balancer
 
-- 1:N Une entrée Plusieur sortie
-- choix hash de du flux pour la sortie
+- 1:N one entry many output
+- outflux random (but respect the flow), use a hash function
 - limite ``set_rate_lb <pkt/s> (voir choise)``
-- nombre packet recus
+- counts received packets
 
 ### Router:
-- propose segment routing
-- ajouter point de passage ``add_encap_node <flow> <node or link>``
-- compte nombre de packet reçus total
+- segment routing ``add_encap_node <flow> <node or link>``
+- counts received and encaplulated packets 
 
 *flow => IP source, IP dst, protocole, port source, port destination*
 
