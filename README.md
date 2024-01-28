@@ -42,7 +42,7 @@ To launch a simple network, follow these steps:
 1. Load the physical topology with:
 
     ```bash
-    sudo python network.py
+    sudo python network.py [number_of_node]
     ```
     you can lunch command inside it like `h1 ping h4`.
 
@@ -144,7 +144,6 @@ enable user to modulate the network
 - `log/`: inside it you have log of all switch 
 - `pcap/`: capture of all port of all switch
 
-if *sadly* you use windows and vscode to watch logs you need to reload the window to see diff
 
 # to remove: 
 - `rapport/` pas a jour
