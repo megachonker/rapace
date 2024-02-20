@@ -140,12 +140,3 @@ enable user to modulate the network
 ***port number** are same that port displayed by the **grpc client command show***
 - `log/`: inside it you have log of all switch 
 - `pcap/`: capture of all port of all switch
-
-
-# to remove: 
-- `rapport/` pas a jour
-- `script/` jamais utiliser de ma part
-- `choise.md` plus a jour
-- `client.py` déprécier
-- `RP23 - Project.pdf` pas du code source ?
-- `todo.md` merged
