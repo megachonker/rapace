@@ -4,6 +4,8 @@ Rapace Project is a network simulation that features configurable equipment, inc
 
 the idea is to make a controle plane that drive the dataplane, that allow a user to quickly reconfigure a SDN.
 
+![](topo.png)
+
 # Table of Contents
 
 - [QuickStart](#QuickStart)
